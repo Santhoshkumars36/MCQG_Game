@@ -1,0 +1,62 @@
+/* =========================================================
+   MCQG Player - Dashboard Stylesheet
+   Path: player/assets/css/player-dashboard.css
+   ========================================================= */
+
+.mcqg-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 18px;
+  margin-bottom: 26px;
+}
+
+.mcqg-stat-card {
+  background: linear-gradient(135deg, var(--mcqg-navy) 0%, var(--mcqg-navy-dark) 100%);
+  color: #fff;
+  border-radius: var(--mcqg-radius);
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--mcqg-shadow);
+  transition: transform 0.25s ease;
+}
+.mcqg-stat-card:hover { transform: translateY(-4px); }
+.mcqg-stat-card::after {
+  content: "";
+  position: absolute; right: -30px; top: -30px; width: 100px; height: 100px;
+  background: rgba(255,255,255,0.08); border-radius: 50%;
+}
+.mcqg-stat-value { font-size: 28px; font-weight: 800; margin: 6px 0 2px; }
+.mcqg-stat-label { font-size: 12.5px; letter-spacing: 0.5px; text-transform: uppercase; color: var(--mcqg-ice); }
+
+.mcqg-round-banner {
+  background: linear-gradient(135deg, var(--mcqg-gold) 0%, var(--mcqg-gold-light) 100%);
+  border-radius: var(--mcqg-radius);
+  padding: 22px 28px;
+  color: var(--mcqg-navy-dark);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  box-shadow: var(--mcqg-shadow);
+}
+.mcqg-round-banner h3 { margin: 0; font-weight: 800; }
+.mcqg-round-banner p { margin: 4px 0 0; opacity: 0.85; }
+
+.mcqg-journey-steps {
+  display: flex;
+  gap: 14px;
+  margin-top: 10px;
+}
+.mcqg-journey-step {
+  flex: 1;
+  text-align: center;
+  padding: 16px;
+  border-radius: var(--mcqg-radius);
+  border: 1px solid var(--mcqg-border);
+  background: #fff;
+  transition: var(--mcqg-transition);
+}
+.mcqg-journey-step.done { border-color: var(--mcqg-green); background: #f2fbf5; }
+.mcqg-journey-step.active { border-color: var(--mcqg-gold); box-shadow: 0 0 0 4px rgba(201,154,46,0.15); }
+.mcqg-journey-step .icon { font-size: 26px; }

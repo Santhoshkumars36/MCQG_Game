@@ -1,0 +1,124 @@
+/* =========================================================
+   MCQG Admin - Game Setup Wizard Stylesheet
+   Path: admin/assets/css/admin-wizard.css
+   Covers the "Step X of 7" progress bar required in MG19 Slide 3
+   ========================================================= */
+
+.mcqg-stepper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 34px;
+  position: relative;
+}
+
+.mcqg-stepper::before {
+  content: "";
+  position: absolute;
+  top: 18px;
+  left: 5%;
+  right: 5%;
+  height: 3px;
+  background: var(--mcqg-border);
+  z-index: 0;
+}
+
+.mcqg-stepper-fill {
+  position: absolute;
+  top: 18px;
+  left: 5%;
+  height: 3px;
+  background: var(--mcqg-gold);
+  z-index: 1;
+  transition: width 0.5s ease;
+}
+
+.mcqg-step {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+}
+
+.mcqg-step-circle {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #fff;
+  border: 3px solid var(--mcqg-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  color: var(--mcqg-text-muted);
+  transition: var(--mcqg-transition);
+}
+
+.mcqg-step.active .mcqg-step-circle {
+  border-color: var(--mcqg-gold);
+  background: var(--mcqg-gold);
+  color: var(--mcqg-navy-dark);
+  box-shadow: 0 0 0 5px rgba(201, 154, 46, 0.2);
+}
+
+.mcqg-step.completed .mcqg-step-circle {
+  border-color: var(--mcqg-navy);
+  background: var(--mcqg-navy);
+  color: #fff;
+}
+
+.mcqg-step-label {
+  font-size: 11.5px;
+  margin-top: 8px;
+  text-align: center;
+  color: var(--mcqg-text-muted);
+  max-width: 90px;
+}
+.mcqg-step.active .mcqg-step-label { color: var(--mcqg-navy); font-weight: 700; }
+
+.mcqg-wizard-panel {
+  animation: mcqg-fade-in 0.4s ease;
+}
+@keyframes mcqg-fade-in {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.mcqg-percent-total-bar {
+  height: 10px;
+  border-radius: 6px;
+  background: var(--mcqg-border);
+  overflow: hidden;
+  margin-top: 6px;
+}
+.mcqg-percent-total-fill {
+  height: 100%;
+  transition: width 0.3s ease, background 0.3s ease;
+}
+.mcqg-percent-total-fill.under { background: var(--mcqg-gold); }
+.mcqg-percent-total-fill.exact { background: var(--mcqg-green); }
+.mcqg-percent-total-fill.over  { background: var(--mcqg-red); }
+
+.mcqg-percent-readout {
+  font-weight: 700;
+  font-size: 13.5px;
+  margin-top: 4px;
+}
+
+.mcqg-driver-group-card {
+  border: 1px dashed var(--mcqg-border);
+  border-radius: 8px;
+  padding: 14px;
+  margin-bottom: 14px;
+  background: #fafbfe;
+}
+
+.mcqg-wizard-nav {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 26px;
+  padding-top: 18px;
+  border-top: 1px solid var(--mcqg-border);
+}

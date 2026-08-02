@@ -1,0 +1,82 @@
+/* =========================================================
+   MCQG Player - Production Screen Stylesheet
+   Path: player/assets/css/player-production.css
+   Covers Build Production (Screen 2) and Demand Economics (Screen 3)
+   ========================================================= */
+
+.mcqg-production-layout {
+  display: grid;
+  grid-template-columns: 1.6fr 1fr;
+  gap: 24px;
+}
+@media (max-width: 991px) { .mcqg-production-layout { grid-template-columns: 1fr; } }
+
+.mcqg-live-panel {
+  background: var(--mcqg-navy);
+  color: #fff;
+  border-radius: var(--mcqg-radius);
+  padding: 22px;
+  position: sticky;
+  top: 20px;
+  height: fit-content;
+}
+.mcqg-live-panel h5 { color: var(--mcqg-ice); font-weight: 700; margin-bottom: 16px; }
+
+.mcqg-live-stat {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.12);
+}
+.mcqg-live-stat:last-child { border-bottom: none; }
+.mcqg-live-stat .label { font-size: 13px; color: var(--mcqg-ice); }
+.mcqg-live-stat .value {
+  font-size: 18px; font-weight: 800; color: #fff;
+  transition: transform 0.25s ease, color 0.25s ease;
+}
+.mcqg-live-stat .value.flash-update { animation: mcqg-flash 0.5s ease; }
+@keyframes mcqg-flash { 0% { color: var(--mcqg-gold); transform: scale(1.08);} 100% { color:#fff; transform: scale(1);} }
+
+.mcqg-driver-investment-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 12px;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px dashed var(--mcqg-border);
+}
+.mcqg-driver-investment-row:last-child { border-bottom: none; }
+
+.mcqg-slider-value {
+  font-weight: 700;
+  color: var(--mcqg-navy);
+  min-width: 70px;
+  text-align: right;
+}
+
+input[type="range"].mcqg-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 6px;
+  border-radius: 4px;
+  background: var(--mcqg-border);
+  outline: none;
+}
+input[type="range"].mcqg-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 18px; height: 18px; border-radius: 50%;
+  background: var(--mcqg-gold);
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+
+.mcqg-price-input-wrapper { position: relative; }
+.mcqg-price-range-hint { font-size: 12px; color: var(--mcqg-text-muted); margin-top: 4px; }
+
+.mcqg-profit-preview {
+  border-radius: var(--mcqg-radius);
+  padding: 16px;
+  text-align: center;
+  margin-top: 16px;
+}
+.mcqg-profit-preview.positive { background: #d4f7e0; color: var(--mcqg-green); }
+.mcqg-profit-preview.negative { background: #fde3e8; color: var(--mcqg-red); }

@@ -1,0 +1,95 @@
+-- =====================================================================
+-- MCQG (Market Competition Quantitative Game) - Database Migration Script
+-- File: database/alter_tables_soft_delete.sql
+-- Description: Adds isDeleted, deletedOn, and createdOn columns to all tables
+--              if updating an existing database instance.
+-- Engine: MySQL / MariaDB (XAMPP)
+-- =====================================================================
+
+SET FOREIGN_KEY_CHECKS = 0;
+
+-- 1. admin_user
+ALTER TABLE admin_user 
+    ADD COLUMN IF NOT EXISTS isDeleted BIT NOT NULL DEFAULT 0,
+    ADD COLUMN IF NOT EXISTS deletedOn DATETIME NULL,
+    ADD COLUMN IF NOT EXISTS createdOn DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP;
+
+-- 2. game_master
+ALTER TABLE game_master 
+    ADD COLUMN IF NOT EXISTS isDeleted BIT NOT NULL DEFAULT 0,
+    ADD COLUMN IF NOT EXISTS deletedOn DATETIME NULL,
+    ADD COLUMN IF NOT EXISTS createdOn DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP;
+
+-- 3. game_market_year
+ALTER TABLE game_market_year 
+    ADD COLUMN IF NOT EXISTS isDeleted BIT NOT NULL DEFAULT 0,
+    ADD COLUMN IF NOT EXISTS deletedOn DATETIME NULL,
+    ADD COLUMN IF NOT EXISTS createdOn DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP;
+
+-- 4. capacity_driver
+ALTER TABLE capacity_driver 
+    ADD COLUMN IF NOT EXISTS isDeleted BIT NOT NULL DEFAULT 0,
+    ADD COLUMN IF NOT EXISTS deletedOn DATETIME NULL,
+    ADD COLUMN IF NOT EXISTS createdOn DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP;
+
+-- 5. demand_driver
+ALTER TABLE demand_driver 
+    ADD COLUMN IF NOT EXISTS isDeleted BIT NOT NULL DEFAULT 0,
+    ADD COLUMN IF NOT EXISTS deletedOn DATETIME NULL,
+    ADD COLUMN IF NOT EXISTS createdOn DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP;
+
+-- 6. investment_master
+ALTER TABLE investment_master 
+    ADD COLUMN IF NOT EXISTS isDeleted BIT NOT NULL DEFAULT 0,
+    ADD COLUMN IF NOT EXISTS deletedOn DATETIME NULL,
+    ADD COLUMN IF NOT EXISTS createdOn DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP;
+
+-- 7. investment_effect
+ALTER TABLE investment_effect 
+    ADD COLUMN IF NOT EXISTS isDeleted BIT NOT NULL DEFAULT 0,
+    ADD COLUMN IF NOT EXISTS deletedOn DATETIME NULL,
+    ADD COLUMN IF NOT EXISTS createdOn DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP;
+
+-- 8. game_configuration
+ALTER TABLE game_configuration 
+    ADD COLUMN IF NOT EXISTS isDeleted BIT NOT NULL DEFAULT 0,
+    ADD COLUMN IF NOT EXISTS deletedOn DATETIME NULL,
+    ADD COLUMN IF NOT EXISTS createdOn DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP;
+
+-- 9. game_demand_allocation
+ALTER TABLE game_demand_allocation 
+    ADD COLUMN IF NOT EXISTS isDeleted BIT NOT NULL DEFAULT 0,
+    ADD COLUMN IF NOT EXISTS deletedOn DATETIME NULL,
+    ADD COLUMN IF NOT EXISTS createdOn DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP;
+
+-- 10. team_master
+ALTER TABLE team_master 
+    ADD COLUMN IF NOT EXISTS isDeleted BIT NOT NULL DEFAULT 0,
+    ADD COLUMN IF NOT EXISTS deletedOn DATETIME NULL,
+    ADD COLUMN IF NOT EXISTS createdOn DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP;
+
+-- 11. team_decision
+ALTER TABLE team_decision 
+    ADD COLUMN IF NOT EXISTS isDeleted BIT NOT NULL DEFAULT 0,
+    ADD COLUMN IF NOT EXISTS deletedOn DATETIME NULL,
+    ADD COLUMN IF NOT EXISTS createdOn DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP;
+
+-- 12. team_investment_selection
+ALTER TABLE team_investment_selection 
+    ADD COLUMN IF NOT EXISTS isDeleted BIT NOT NULL DEFAULT 0,
+    ADD COLUMN IF NOT EXISTS deletedOn DATETIME NULL,
+    ADD COLUMN IF NOT EXISTS createdOn DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP;
+
+-- 13. team_result
+ALTER TABLE team_result 
+    ADD COLUMN IF NOT EXISTS isDeleted BIT NOT NULL DEFAULT 0,
+    ADD COLUMN IF NOT EXISTS deletedOn DATETIME NULL,
+    ADD COLUMN IF NOT EXISTS createdOn DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP;
+
+-- 14. game_round_status
+ALTER TABLE game_round_status 
+    ADD COLUMN IF NOT EXISTS isDeleted BIT NOT NULL DEFAULT 0,
+    ADD COLUMN IF NOT EXISTS deletedOn DATETIME NULL,
+    ADD COLUMN IF NOT EXISTS createdOn DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP;
+
+SET FOREIGN_KEY_CHECKS = 1;
