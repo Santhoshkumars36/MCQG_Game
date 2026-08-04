@@ -10,7 +10,7 @@
  */
 
 if (!defined('MCQG_APP')) {
-    die('Direct access not permitted.');
+    require_once __DIR__ . '/../config/constants.php';
 }
 
 class Auth
@@ -97,7 +97,7 @@ class Auth
     public static function requireAdmin(): void
     {
         if (!Session::isAdminLoggedIn()) {
-            header('Location: ' . ADMIN_URL . '/auth/login.php');
+            header('Location: ' . ADMIN_URL . 'auth/login.php');
             exit;
         }
     }
@@ -106,9 +106,21 @@ class Auth
     public static function requireTeam(): void
     {
         if (!Session::isTeamLoggedIn()) {
-            header('Location: ' . PLAYER_URL . '/auth/login.php');
+            header('Location: ' . PLAYER_URL . 'auth/login.php');
             exit;
         }
+    }
+
+    /** Returns true if an admin session is currently active. */
+    public static function isAdmin(): bool
+    {
+        return Session::isAdminLoggedIn();
+    }
+
+    /** Returns true if a team/player session is currently active. */
+    public static function isTeam(): bool
+    {
+        return Session::isTeamLoggedIn();
     }
 
     /** Hashes a plain-text password for storing in admin_user / team_master. */

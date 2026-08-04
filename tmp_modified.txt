@@ -1,0 +1,17 @@
+﻿admin/auth/login.php
+assets/css/bootstrap.min.css
+assets/css/common.css
+assets/js/bootstrap.bundle.min.js
+assets/js/common.js
+assets/js/jquery.min.js
+config/app_config.php
+config/constants.php
+core/Auth.php
+includes/auth_check.php
+includes/error_handler.php
+includes/global_footer.php
+includes/global_header.php
+index.php
+logout.php
+player/auth/login.php
+player/screens/submit_decision.php

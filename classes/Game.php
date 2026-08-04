@@ -8,7 +8,7 @@
  */
 
 if (!defined('MCQG_APP')) {
-    die('Direct access not permitted.');
+    require_once __DIR__ . '/../config/constants.php';
 }
 
 class Game

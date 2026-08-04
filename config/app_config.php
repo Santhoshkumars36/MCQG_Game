@@ -9,8 +9,10 @@
  * =====================================================================
  */
 
+// Auto-load constants first (defines MCQG_APP and all path/URL constants).
+// This means every entry point only needs: require_once '.../app_config.php';
 if (!defined('MCQG_APP')) {
-    die('Direct access not permitted.');
+    require_once __DIR__ . '/constants.php';
 }
 
 // ---------------------------------------------------------------------
@@ -52,6 +54,13 @@ spl_autoload_register(function ($className) {
         }
     }
 });
+
+// ---------------------------------------------------------------------
+// SESSION BOOTSTRAP
+// Start the session once here so that Auth::isAdmin() / Auth::isTeam()
+// work correctly on every page (including index.php).
+// ---------------------------------------------------------------------
+require_once __DIR__ . '/session_config.php';
 
 // ---------------------------------------------------------------------
 // GLOBAL ERROR / EXCEPTION HANDLING -> routed to core/Logger.php

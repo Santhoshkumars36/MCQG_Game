@@ -25,7 +25,7 @@ $currentRound = $db->fetchOne(
 
 if (!$currentRound) {
     Session::setFlash('error', 'No open round found to submit.');
-    header('Location: ' . PLAYER_URL . 'dashboard.php');
+    header('Location: ' . PLAYER_URL . '/dashboard.php');
     exit;
 }
 

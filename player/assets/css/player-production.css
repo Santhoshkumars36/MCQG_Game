@@ -63,6 +63,7 @@ input[type="range"].mcqg-slider {
 }
 input[type="range"].mcqg-slider::-webkit-slider-thumb {
   -webkit-appearance: none;
+  appearance: none;
   width: 18px; height: 18px; border-radius: 50%;
   background: var(--mcqg-gold);
   cursor: pointer;

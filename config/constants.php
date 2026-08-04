@@ -31,13 +31,14 @@ define('DB_CHARSET', 'utf8mb4');
 // FOLDER / URL PATHS
 // ---------------------------------------------------------------------
 define('ROOT_PATH', dirname(__DIR__));                 // absolute server path to mcqg-game/
-define('BASE_URL', '/mcqg-game');                       // change if hosted in a different sub-folder
-define('ADMIN_URL', BASE_URL . '/admin');
-define('PLAYER_URL', BASE_URL . '/player');
-define('AJAX_URL', BASE_URL . '/ajax');
-define('ASSETS_URL', BASE_URL . '/assets');              // shared assets only (Bootstrap/jQuery)
-define('ADMIN_ASSETS_URL', ADMIN_URL . '/assets');       // admin-only css/js (kept separate as required)
-define('PLAYER_ASSETS_URL', PLAYER_URL . '/assets');     // player-only css/js (kept separate as required)
+define('BASE_URL', '/mcqg_game');                       // change if hosted in a different sub-folder
+define('ADMIN_URL', BASE_URL . '/admin/');
+define('PLAYER_URL', BASE_URL . '/player/');
+define('AJAX_URL', BASE_URL . '/ajax/');
+define('ASSETS_URL', BASE_URL . '/assets/');             // shared assets only (Bootstrap/jQuery)
+define('ASSET_URL',  ASSETS_URL);                        // alias - many files use the shorter spelling
+define('ADMIN_ASSETS_URL',  ADMIN_URL  . 'assets/');    // admin-only css/js
+define('PLAYER_ASSETS_URL', PLAYER_URL . 'assets/');    // player-only css/js
 
 define('LOG_PATH', ROOT_PATH . '/logs');
 

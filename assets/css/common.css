@@ -1,0 +1,70 @@
+/* =========================================================
+   MCQG - Shared Common Stylesheet
+   Path: assets/css/common.css
+   Loaded by BOTH admin/ and player/ - only truly universal
+   resets/utilities go here. Module-specific styling lives in
+   admin/assets/css/* and player/assets/css/* respectively.
+   ========================================================= */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  text-decoration: none;
+}
+
+/* Scrollbar styling (Webkit browsers) */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: #f1f2f6; }
+::-webkit-scrollbar-thumb { background: #c9cdd8; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #a9aebc; }
+
+/* Universal utility classes used across admin + player */
+.mcqg-text-muted { color: #5b5f6b; }
+.mcqg-fw-bold { font-weight: 700; }
+.mcqg-text-center { text-align: center; }
+.mcqg-mt-0 { margin-top: 0 !important; }
+.mcqg-hidden { display: none !important; }
+.mcqg-fade-in { animation: mcqgCommonFadeIn 0.35s ease; }
+
+@keyframes mcqgCommonFadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Simple loading spinner used by both modules while AJAX calls are in flight */
+.mcqg-spinner {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  border: 3px solid rgba(0, 0, 0, 0.1);
+  border-top-color: #1e2761;
+  border-radius: 50%;
+  animation: mcqgSpin 0.7s linear infinite;
+}
+@keyframes mcqgSpin {
+  to { transform: rotate(360deg); }
+}
+
+/* Focus outline consistency across browsers */
+button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible {
+  outline: 2px solid #c99a2e;
+  outline-offset: 2px;
+}
+
+/* Print - hide sidebars/navigation when printing any report */
+@media print {
+  .mcqg-sidebar, .mcqg-topbar, .mcqg-toast, button { display: none !important; }
+  .mcqg-main { margin-left: 0 !important; }
+}
