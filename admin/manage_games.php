@@ -53,6 +53,8 @@ require_once __DIR__ . '/includes/admin_header.php';
         <td><span class="mcqg-badge <?php echo $badgeClass; ?>"><?php echo $g['status']; ?></span></td>
         <td><?php echo date('d M Y', strtotime($g['created_on'])); ?></td>
         <td>
+          <a href="game_setup/step1_title_case_study.php?game_id=<?php echo $g['game_id']; ?>" class="btn btn-sm btn-outline-warning" title="Edit Game"><i class="fas fa-edit"></i> Edit</a>
+          <button type="button" onclick="confirmDeleteGame(<?php echo $g['game_id']; ?>, '<?php echo addslashes(htmlspecialchars($g['game_name'])); ?>')" class="btn btn-sm btn-outline-danger" title="Delete Game"><i class="fas fa-trash-alt"></i> Delete</button>
           <a href="?game_id=<?php echo $g['game_id']; ?>" class="btn btn-sm btn-mcqg-outline">View</a>
           <a href="team_management/team_list.php?game_id=<?php echo $g['game_id']; ?>" class="btn btn-sm btn-mcqg-outline">Teams</a>
           <a href="round_control/round_status.php?game_id=<?php echo $g['game_id']; ?>" class="btn btn-sm btn-mcqg-outline">Rounds</a>
@@ -66,7 +68,13 @@ require_once __DIR__ . '/includes/admin_header.php';
 
 <?php if ($selectedGame): ?>
 <div class="mcqg-card">
-  <div class="mcqg-card-header"><h3><?php echo htmlspecialchars($selectedGame['game_name']); ?> - Overview</h3></div>
+  <div class="mcqg-card-header d-flex justify-content-between align-items-center">
+    <h3 class="m-0"><?php echo htmlspecialchars($selectedGame['game_name']); ?> - Overview</h3>
+    <div>
+      <a href="game_setup/step1_title_case_study.php?game_id=<?php echo $selectedGame['game_id']; ?>" class="btn btn-sm btn-warning me-1"><i class="fas fa-edit me-1"></i> Edit Game</a>
+      <button type="button" onclick="confirmDeleteGame(<?php echo $selectedGame['game_id']; ?>, '<?php echo addslashes(htmlspecialchars($selectedGame['game_name'])); ?>')" class="btn btn-sm btn-danger"><i class="fas fa-trash-alt me-1"></i> Delete Game</button>
+    </div>
+  </div>
   <div class="mcqg-driver-group-card" style="background:#fff;">
     <?php echo $selectedGame['description']; ?>
   </div>

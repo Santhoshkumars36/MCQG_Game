@@ -19,6 +19,9 @@ if (!isset($pageTitle)) { $pageTitle = 'Player'; }
   <link rel="stylesheet" href="<?php echo PLAYER_URL; ?>assets/css/player-dashboard.css">
   <link rel="stylesheet" href="<?php echo PLAYER_URL; ?>assets/css/player-production.css">
   <link rel="stylesheet" href="<?php echo PLAYER_URL; ?>assets/css/player-results.css">
+  <!-- SweetAlert2 & FontAwesome -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
   <script>
     // Used by every player_ajax/* JS call

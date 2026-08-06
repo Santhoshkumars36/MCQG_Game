@@ -7,14 +7,6 @@
  *          endpoints (live, as-you-type validation) and the final
  *          server-side form submission use the EXACT same rules -
  *          no duplicated/conflicting logic between JS and PHP.
- *
- * Key rules implemented here (traced back to source):
- *   - percentageTotalsEqual100()  -> Doc 3, Slides 5 & 7
- *   - inRange()                    -> Doc 3, Slide 7 (price min/max),
- *                                     Slide 4 (capacity min/max)
- *   - isValidIncrement()           -> Doc 3, Slides 4, 5, 6, 11
- *   - csrfTokenValid()             -> security hardening (not in ARD,
- *                                     added as standard best practice)
  * =====================================================================
  */
 
@@ -27,54 +19,49 @@ class Validator
     /** @var string[] Accumulates human-readable error messages */
     private array $errors = [];
 
-    public function required($value, string $fieldLabel): self
+    public static function required($value, ?string $fieldLabel = null): bool
     {
-        if ($value === null || trim((string)$value) === '') {
-            $this->errors[] = "$fieldLabel is required.";
-        }
-        return $this;
+        return ($value !== null && trim((string)$value) !== '');
     }
 
-    public function numeric($value, string $fieldLabel): self
+    public static function numeric($value): bool
     {
-        if (!is_numeric($value)) {
-            $this->errors[] = "$fieldLabel must be a number.";
-        }
-        return $this;
+        return is_numeric($value);
     }
 
-    public function inRange($value, float $min, float $max, string $fieldLabel): self
+    public static function inRange($value, float $min, float $max): bool
     {
-        if (!is_numeric($value) || $value < $min || $value > $max) {
-            $this->errors[] = "$fieldLabel must be between $min and $max.";
-        }
-        return $this;
+        return is_numeric($value) && $value >= $min && $value <= $max;
     }
 
-    /**
-     * Checks a value lands exactly on an allowed increment step from a
-     * base minimum - e.g. Capacity Increment = 100 means only 4000,
-     * 4100, 4200... are valid (Doc 3, Slide 4/6/11).
-     */
-    public function isValidIncrement($value, float $min, float $increment, string $fieldLabel): self
+    public static function isValidIncrement($value, float $min, float $increment): bool
     {
         if ($increment <= 0) {
-            return $this; // no increment restriction configured
+            return true;
         }
         $steps = ($value - $min) / $increment;
-        if (abs($steps - round($steps)) > 0.0001) {
-            $this->errors[] = "$fieldLabel must move in steps of $increment starting from $min.";
-        }
-        return $this;
+        return abs($steps - round($steps)) <= 0.0001;
     }
 
-    public function maxDecimalPlaces($value, int $decimals, string $fieldLabel): self
+    public static function maxDecimalPlaces($value, int $decimals): bool
     {
         $decimalPart = explode('.', (string)$value)[1] ?? '';
-        if (strlen($decimalPart) > $decimals) {
-            $this->errors[] = "$fieldLabel can have at most $decimals decimal place(s).";
-        }
-        return $this;
+        return strlen($decimalPart) <= $decimals;
+    }
+
+    public static function isValidEffectPercent($value): bool
+    {
+        return is_numeric($value) && $value >= -100.0 && $value <= 100.0;
+    }
+
+    public static function priceWithinRange(float $price, float $minPrice, float $maxPrice): bool
+    {
+        return $price >= $minPrice && $price <= $maxPrice;
+    }
+
+    public static function percentTotalsTo100(array $percentages, float $tolerance = 0.01): bool
+    {
+        return self::percentageTotalsEqual100($percentages, $tolerance);
     }
 
     public function hasErrors(): bool
@@ -107,7 +94,8 @@ class Validator
     public static function percentageTotalsEqual100(array $percentages, float $tolerance = 0.01): bool
     {
         $sum = array_sum($percentages);
-        return abs($sum - DRIVER_SHARE_TOTAL_REQUIRED) <= $tolerance;
+        $required = defined('DRIVER_SHARE_TOTAL_REQUIRED') ? DRIVER_SHARE_TOTAL_REQUIRED : 100.0;
+        return abs($sum - $required) <= $tolerance;
     }
 
     /** Returns the actual total, so the UI can show "Currently: 92%" style messages. */
@@ -139,3 +127,4 @@ class Validator
             && hash_equals(Session::csrfToken(), $submittedToken);
     }
 }
+

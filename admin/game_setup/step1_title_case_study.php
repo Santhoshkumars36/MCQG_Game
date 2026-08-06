@@ -10,8 +10,13 @@ Auth::requireAdmin();
 $db = Database::getInstance();
 $error = '';
 
-// Resume an in-progress draft if one exists in session
-$gameId = Session::get('setup_game_id');
+// Resume an in-progress draft or edit a specified game
+if (isset($_GET['game_id'])) {
+    $gameId = (int) $_GET['game_id'];
+    Session::set('setup_game_id', $gameId);
+} else {
+    $gameId = Session::get('setup_game_id');
+}
 $game = $gameId ? $db->fetchOne("SELECT * FROM game_master WHERE game_id = :g", ['g' => $gameId]) : null;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -31,7 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'description' => $caseStudy,
                 'product_name' => 'Untitled Product',
                 'status'      => GAME_STATUS_DRAFT,
-                'created_by'  => Session::get('admin_id'),
+                'created_by'  => Session::currentAdminId(),
             ]);
             Session::set('setup_game_id', $newId);
         }
@@ -81,7 +86,7 @@ require_once __DIR__ . '/../includes/admin_header.php';
           <button type="button" class="btn btn-sm btn-outline-secondary" onclick="document.execCommand('insertUnorderedList')">&bull; List</button>
           <button type="button" class="btn btn-sm btn-outline-secondary" onclick="document.execCommand('insertOrderedList')">1. List</button>
         </div>
-        <div id="case-study-editor" contenteditable="true" class="form-control mcqg-input-live" required
+        <div id="case-study-editor" contenteditable="true" class="form-control mcqg-input-live"
              style="min-height:220px; overflow-y:auto;"><?php echo $game['description'] ?? ''; ?></div>
         <textarea name="case_study" id="case-study-hidden" style="display:none;" required></textarea>
       </div>
@@ -95,12 +100,19 @@ require_once __DIR__ . '/../includes/admin_header.php';
 </div>
 
 <script>
-  // Sync the rich-text contenteditable div into the hidden textarea before submit
+  // Sync the rich-text contenteditable div into the hidden textarea
   const editor = document.getElementById('case-study-editor');
   const hidden = document.getElementById('case-study-hidden');
-  document.getElementById('mcqg-wizard-form').addEventListener('submit', function () {
-    hidden.value = editor.innerHTML;
-  });
+  if (editor && hidden) {
+    const syncCaseStudy = function() {
+      const text = editor.innerText ? editor.innerText.trim() : '';
+      hidden.value = text ? editor.innerHTML : '';
+    };
+    editor.addEventListener('input', syncCaseStudy);
+    editor.addEventListener('blur', syncCaseStudy);
+    editor.addEventListener('keyup', syncCaseStudy);
+    syncCaseStudy();
+  }
 </script>
 
 <?php require_once __DIR__ . '/../includes/admin_footer.php'; ?>

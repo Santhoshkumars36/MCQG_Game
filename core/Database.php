@@ -72,20 +72,80 @@ class Database
         return $value === false ? null : $value;
     }
 
-    /** Run an INSERT and return the new auto-increment ID. */
-    public function insert(string $sql, array $params = []): string
+    /**
+     * ORM-style INSERT: pass table name + associative data array.
+     * e.g. $db->insert('game_master', ['game_name' => 'Test', 'status' => 'Draft'])
+     * Returns the new auto-increment ID.
+     */
+    public function insert(string $table, array $data): string
     {
+        // Detect if first arg looks like raw SQL (contains spaces)
+        if (strpos($table, ' ') !== false) {
+            // Legacy raw-SQL call: insert($sql, $params)
+            $stmt = $this->connection->prepare($table);
+            $stmt->execute($data);
+            return $this->connection->lastInsertId();
+        }
+
+        $cols   = array_keys($data);
+        $placeholders = array_map(fn($c) => ':' . $c, $cols);
+        $sql = 'INSERT INTO `' . $table . '` (`' . implode('`, `', $cols) . '`) '
+             . 'VALUES (' . implode(', ', $placeholders) . ')';
+        $params = [];
+        foreach ($data as $col => $val) {
+            $params[':' . $col] = $val;
+        }
         $stmt = $this->connection->prepare($sql);
         $stmt->execute($params);
         return $this->connection->lastInsertId();
     }
 
-    /** Run an UPDATE or DELETE and return the number of affected rows. */
+    /**
+     * ORM-style UPDATE: pass table, data array, WHERE clause, WHERE params.
+     * e.g. $db->update('game_master', ['game_name' => 'New'], 'game_id = :g', ['g' => 1])
+     * Returns number of affected rows.
+     */
+    public function update(string $table, array $data, string $where = '', array $whereParams = []): int
+    {
+        $sets = [];
+        $params = [];
+        foreach ($data as $col => $val) {
+            $sets[] = '`' . $col . '` = :set_' . $col;
+            $params[':set_' . $col] = $val;
+        }
+        $sql = 'UPDATE `' . $table . '` SET ' . implode(', ', $sets);
+        if ($where !== '') {
+            $sql .= ' WHERE ' . $where;
+            foreach ($whereParams as $k => $v) {
+                // Support both ':key' and 'key' format
+                $key = (str_starts_with($k, ':')) ? $k : ':' . $k;
+                $params[$key] = $v;
+            }
+        }
+        $stmt = $this->connection->prepare($sql);
+        $stmt->execute($params);
+        return $stmt->rowCount();
+    }
+
+    /** Run an UPDATE or DELETE raw SQL and return the number of affected rows. */
     public function execute(string $sql, array $params = []): int
     {
         $stmt = $this->connection->prepare($sql);
         $stmt->execute($params);
         return $stmt->rowCount();
+    }
+
+    /**
+     * Run a SQL query (SELECT, INSERT, UPDATE, DELETE).
+     * Automatically dispatches to fetchAll for SELECTs or execute for write operations.
+     */
+    public function query(string $sql, array $params = [])
+    {
+        $trimmed = ltrim($sql);
+        if (strncasecmp($trimmed, 'SELECT', 6) === 0 || strncasecmp($trimmed, 'SHOW', 4) === 0) {
+            return $this->fetchAll($sql, $params);
+        }
+        return $this->execute($sql, $params);
     }
 
     public function beginTransaction(): bool { return $this->connection->beginTransaction(); }
@@ -99,3 +159,4 @@ class Database
         throw new Exception('Cannot unserialize a Database singleton.');
     }
 }
+

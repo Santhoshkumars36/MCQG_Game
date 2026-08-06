@@ -29,14 +29,29 @@ function initNextButtonValidation() {
   if (!nextBtn || !form) return;
 
   nextBtn.addEventListener("click", function (e) {
+    const editor = document.getElementById("case-study-editor");
+    const hidden = document.getElementById("case-study-hidden");
+    if (editor && hidden) {
+      const text = editor.innerText ? editor.innerText.trim() : "";
+      hidden.value = text ? editor.innerHTML : "";
+    }
+
     let valid = true;
     form.querySelectorAll("[required]").forEach((field) => {
       if (!field.value || field.value.trim() === "") {
         valid = false;
         field.classList.add("is-invalid-live");
+        if (field.id === "case-study-hidden" && editor) {
+          editor.classList.add("is-invalid-live");
+          editor.classList.remove("is-valid-live");
+        }
       } else {
         field.classList.remove("is-invalid-live");
         field.classList.add("is-valid-live");
+        if (field.id === "case-study-hidden" && editor) {
+          editor.classList.remove("is-invalid-live");
+          editor.classList.add("is-valid-live");
+        }
       }
     });
 

@@ -85,9 +85,32 @@ require_once __DIR__ . '/../includes/player_header.php';
   <?php if ($decision['status'] !== 'Submitted'): ?>
   <div class="d-flex justify-content-between mt-4 pt-3" style="border-top:1px solid var(--mcqg-border);">
     <a href="demand_economics.php" class="btn btn-mcqg-outline">Back &amp; Edit</a>
-    <form method="POST" action="submit_decision.php" onsubmit="return confirm('Submit this decision for Year <?php echo $yearNo; ?>? You will not be able to change it afterward.');">
-      <button type="submit" class="btn btn-mcqg-gold">Submit Final Decision</button>
+    <form method="POST" action="submit_decision.php" id="submit-decision-form">
+      <button type="button" onclick="confirmSubmitDecision()" class="btn btn-mcqg-gold">Submit Final Decision</button>
     </form>
+    <script>
+      function confirmSubmitDecision() {
+        if (typeof Swal !== 'undefined') {
+          Swal.fire({
+            title: 'Submit Final Decision?',
+            text: 'Submit this decision for Year <?php echo $yearNo; ?>? You will not be able to edit it afterward.',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#1e2761',
+            confirmButtonText: 'Yes, Submit Final Decision',
+            cancelButtonText: 'Cancel'
+          }).then((result) => {
+            if (result.isConfirmed) {
+              document.getElementById('submit-decision-form').submit();
+            }
+          });
+        } else {
+          if (confirm('Submit this decision for Year <?php echo $yearNo; ?>? You will not be able to change it afterward.')) {
+            document.getElementById('submit-decision-form').submit();
+          }
+        }
+      }
+    </script>
   </div>
   <?php endif; ?>
 </div>

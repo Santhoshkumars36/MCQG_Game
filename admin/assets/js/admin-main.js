@@ -30,14 +30,58 @@ function initFlashToasts() {
 }
 
 function showToast(message, type = "success") {
-  const colors = { success: "#1f9d55", error: "#d9364f", info: "#1e2761" };
-  const toast = document.createElement("div");
-  toast.className = "mcqg-toast alert";
-  toast.style.background = colors[type] || colors.info;
-  toast.style.color = "#fff";
-  toast.innerHTML = `<strong>${type === "error" ? "Error" : "Notice"}:</strong> ${message}`;
-  document.body.appendChild(toast);
-  setTimeout(() => toast.remove(), 4200);
+  if (typeof Swal !== "undefined") {
+    const iconMap = { success: 'success', error: 'error', warning: 'warning', info: 'info' };
+    const Toast = Swal.mixin({
+      toast: true,
+      position: 'top-end',
+      showConfirmButton: false,
+      timer: 3500,
+      timerProgressBar: true,
+      didOpen: (toast) => {
+        toast.addEventListener('mouseenter', Swal.stopTimer);
+        toast.addEventListener('mouseleave', Swal.resumeTimer);
+      }
+    });
+    Toast.fire({
+      icon: iconMap[type] || 'info',
+      title: message
+    });
+  } else {
+    const colors = { success: "#1f9d55", error: "#d9364f", info: "#1e2761" };
+    const toast = document.createElement("div");
+    toast.className = "mcqg-toast alert";
+    toast.style.background = colors[type] || colors.info;
+    toast.style.color = "#fff";
+    toast.innerHTML = `<strong>${type === "error" ? "Error" : "Notice"}:</strong> ${message}`;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 4200);
+  }
+}
+
+/** SweetAlert confirmation before deleting a game */
+function confirmDeleteGame(gameId, gameName) {
+  const targetUrl = (window.ADMIN_URL || '') + 'delete_game.php?game_id=' + gameId;
+  if (typeof Swal !== "undefined") {
+    Swal.fire({
+      title: 'Delete Game?',
+      text: `Are you sure you want to delete "${gameName}"? This action cannot be undone.`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d9364f',
+      cancelButtonColor: '#6c757d',
+      confirmButtonText: '<i class="fas fa-trash-alt me-1"></i> Yes, Delete',
+      cancelButtonText: 'Cancel'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        window.location.href = targetUrl;
+      }
+    });
+  } else {
+    if (confirm(`Are you sure you want to delete "${gameName}"?`)) {
+      window.location.href = targetUrl;
+    }
+  }
 }
 
 /** Generic JSON POST helper used by every admin_ajax/* call */

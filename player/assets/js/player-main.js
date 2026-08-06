@@ -26,14 +26,33 @@ function initFlashToasts() {
 }
 
 function showToast(message, type = "success") {
-  const colors = { success: "#1f9d55", error: "#d9364f", info: "#1e2761" };
-  const toast = document.createElement("div");
-  toast.className = "mcqg-toast alert";
-  toast.style.background = colors[type] || colors.info;
-  toast.style.color = "#fff";
-  toast.innerHTML = `<strong>${type === "error" ? "Notice" : "Success"}:</strong> ${message}`;
-  document.body.appendChild(toast);
-  setTimeout(() => toast.remove(), 4200);
+  if (typeof Swal !== "undefined") {
+    const iconMap = { success: 'success', error: 'error', warning: 'warning', info: 'info' };
+    const Toast = Swal.mixin({
+      toast: true,
+      position: 'top-end',
+      showConfirmButton: false,
+      timer: 3500,
+      timerProgressBar: true,
+      didOpen: (toast) => {
+        toast.addEventListener('mouseenter', Swal.stopTimer);
+        toast.addEventListener('mouseleave', Swal.resumeTimer);
+      }
+    });
+    Toast.fire({
+      icon: iconMap[type] || 'info',
+      title: message
+    });
+  } else {
+    const colors = { success: "#1f9d55", error: "#d9364f", info: "#1e2761" };
+    const toast = document.createElement("div");
+    toast.className = "mcqg-toast alert";
+    toast.style.background = colors[type] || colors.info;
+    toast.style.color = "#fff";
+    toast.innerHTML = `<strong>${type === "error" ? "Notice" : "Success"}:</strong> ${message}`;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 4200);
+  }
 }
 
 /** Generic JSON POST helper used by every ajax/player_ajax/* call */

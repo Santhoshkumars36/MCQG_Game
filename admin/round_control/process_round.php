@@ -71,10 +71,34 @@ require_once __DIR__ . '/../includes/admin_header.php';
   <?php else: ?>
     <p>Processing will run the allocation engine (guaranteed minimum &rarr; demand-driver share &rarr; lowest price),
        calculate cost and profit for every team, and open the results to all teams. This cannot be undone.</p>
-    <form method="POST" onsubmit="return confirm('Process Year <?php echo $yearNo; ?> now? This cannot be undone.');">
-      <button type="submit" name="confirm_process" value="1" class="btn btn-mcqg-gold">Confirm &amp; Process Round</button>
+    <form method="POST" id="process-round-form">
+      <input type="hidden" name="confirm_process" value="1">
+      <button type="button" onclick="confirmProcessRound()" class="btn btn-mcqg-gold">Confirm &amp; Process Round</button>
       <a href="round_status.php?game_id=<?php echo $gameId; ?>" class="btn btn-mcqg-outline">Cancel</a>
     </form>
+    <script>
+      function confirmProcessRound() {
+        if (typeof Swal !== 'undefined') {
+          Swal.fire({
+            title: 'Process Year <?php echo $yearNo; ?>?',
+            text: 'Processing will run calculations and release results to all teams. This cannot be undone.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#1e2761',
+            confirmButtonText: 'Yes, Process Round',
+            cancelButtonText: 'Cancel'
+          }).then((result) => {
+            if (result.isConfirmed) {
+              document.getElementById('process-round-form').submit();
+            }
+          });
+        } else {
+          if (confirm('Process Year <?php echo $yearNo; ?> now? This cannot be undone.')) {
+            document.getElementById('process-round-form').submit();
+          }
+        }
+      }
+    </script>
   <?php endif; ?>
 </div>
 

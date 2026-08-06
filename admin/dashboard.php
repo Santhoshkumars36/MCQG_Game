@@ -21,7 +21,7 @@ require_once __DIR__ . '/includes/admin_header.php';
 <?php require_once __DIR__ . '/includes/admin_sidebar.php'; ?>
 <?php require_once __DIR__ . '/includes/admin_topbar.php'; ?>
 
-<h2 class="mb-3" style="color:var(--mcqg-navy); font-weight:800;">Welcome back, <?php echo htmlspecialchars(Session::get('admin_name', 'Admin')); ?></h2>
+<h2 class="mb-3" style="color:var(--mcqg-navy); font-weight:800;">Welcome back, <?php echo htmlspecialchars(Session::get(SESSION_ADMIN_NAME, 'Admin')); ?></h2>
 
 <div class="mcqg-stat-grid">
   <div class="mcqg-stat-card">
@@ -61,13 +61,25 @@ require_once __DIR__ . '/includes/admin_header.php';
     ?>
     <div class="mcqg-game-tile">
       <div class="mcqg-game-tile-header">
-        <span><?php echo htmlspecialchars($g['game_name']); ?></span>
-        <span class="mcqg-badge <?php echo $badgeClass; ?>"><?php echo $g['status']; ?></span>
+        <span class="text-truncate me-2" style="max-width: 140px;" title="<?php echo htmlspecialchars($g['game_name']); ?>"><?php echo htmlspecialchars($g['game_name']); ?></span>
+        <div class="d-flex align-items-center gap-1">
+          <span class="mcqg-badge <?php echo $badgeClass; ?> me-1"><?php echo $g['status']; ?></span>
+          <a href="game_setup/step1_title_case_study.php?game_id=<?php echo $g['game_id']; ?>" class="btn btn-sm text-white p-1" title="Edit Game" style="font-size: 14px; opacity: 0.9;">
+            <i class="fas fa-edit"></i>
+          </a>
+          <button type="button" onclick="confirmDeleteGame(<?php echo $g['game_id']; ?>, '<?php echo addslashes(htmlspecialchars($g['game_name'])); ?>')" class="btn btn-sm text-danger p-1" title="Delete Game" style="font-size: 13px; background: #fff; border-radius: 4px; padding: 2px 6px !important; line-height: 1;">
+            <i class="fas fa-trash-alt"></i>
+          </button>
+        </div>
       </div>
       <div class="mcqg-game-tile-body">
         <p><?php echo (int) $g['no_of_years']; ?> years &middot; <?php echo htmlspecialchars($g['currency']); ?></p>
         <p>Created <?php echo date('d M Y', strtotime($g['created_on'])); ?></p>
-        <a href="manage_games.php?game_id=<?php echo $g['game_id']; ?>" class="btn btn-sm btn-mcqg-outline w-100 mt-2">Manage</a>
+        <div class="d-flex gap-2 mt-2">
+          <a href="game_setup/step1_title_case_study.php?game_id=<?php echo $g['game_id']; ?>" class="btn btn-sm btn-outline-warning flex-fill"><i class="fas fa-edit me-1"></i> Edit</a>
+          <a href="manage_games.php?game_id=<?php echo $g['game_id']; ?>" class="btn btn-sm btn-mcqg-outline flex-fill">Manage</a>
+          <button type="button" onclick="confirmDeleteGame(<?php echo $g['game_id']; ?>, '<?php echo addslashes(htmlspecialchars($g['game_name'])); ?>')" class="btn btn-sm btn-outline-danger" title="Delete Game"><i class="fas fa-trash-alt"></i></button>
+        </div>
       </div>
     </div>
     <?php endforeach; ?>
