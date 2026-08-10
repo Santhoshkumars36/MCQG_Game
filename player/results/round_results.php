@@ -11,8 +11,8 @@ require_once __DIR__ . '/../../config/app_config.php';
 Auth::requireTeam();
 
 $db = Database::getInstance();
-$teamId = Session::get('team_id');
-$gameId = Session::get('game_id');
+$teamId = Session::currentTeamId();
+$gameId = Session::activeGameId();
 
 $processedYears = $db->fetchAll(
     "SELECT DISTINCT year_no FROM team_result WHERE game_id = :g AND team_id = :t ORDER BY year_no DESC",

@@ -10,9 +10,15 @@ require_once __DIR__ . '/../../config/app_config.php';
 Auth::requireTeam();
 
 $db = Database::getInstance();
-$teamId = Session::get('team_id');
-$gameId = Session::get('game_id');
-$game = $db->fetchOne("SELECT * FROM game_master WHERE game_id = :g", ['g' => $gameId]);
+$teamId = Session::currentTeamId();
+$gameId = Session::activeGameId();
+$game = $gameId ? $db->fetchOne("SELECT * FROM game_master WHERE game_id = :g", ['g' => $gameId]) : null;
+
+if (!$game) {
+    Auth::logout();
+    header('Location: ' . PLAYER_URL . 'auth/login.php');
+    exit;
+}
 
 $currentRound = $db->fetchOne(
     "SELECT * FROM game_round_status WHERE game_id = :g AND status != 'Processed' ORDER BY year_no LIMIT 1",
@@ -65,7 +71,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $db->insert('team_investment_selection', array_merge($data, ['decision_id' => $decision['decision_id'], 'investment_id' => $inv['investment_id']]));
                 }
             } elseif ($exists) {
-                $db->delete('team_investment_selection', 'selection_id = :s', ['s' => $exists['selection_id']]);
+                $db->execute("DELETE FROM team_investment_selection WHERE selection_id = :s", ['s' => $exists['selection_id']]);
             }
         }
 

@@ -61,7 +61,12 @@ function showToast(message, type = "success") {
 
 /** SweetAlert confirmation before deleting a game */
 function confirmDeleteGame(gameId, gameName) {
-  const targetUrl = (window.ADMIN_URL || '') + 'delete_game.php?game_id=' + gameId;
+  let adminUrl = typeof ADMIN_URL !== 'undefined' ? ADMIN_URL : '';
+  if (!adminUrl && window.location.pathname.includes('/admin/')) {
+    adminUrl = window.location.pathname.substring(0, window.location.pathname.indexOf('/admin/') + 7);
+  }
+  const targetUrl = adminUrl + 'delete_game.php?game_id=' + gameId;
+
   if (typeof Swal !== "undefined") {
     Swal.fire({
       title: 'Delete Game?',

@@ -26,7 +26,7 @@ if (str_contains($currentScript, '/admin/')) {
     // Extra player-side guard: a team may only act inside a game that
     // is still Published. If it was reverted to Draft or no longer
     // exists, force a fresh login rather than showing a broken screen.
-    $activeGameId = Session::get('game_id');
+    $activeGameId = Session::activeGameId();
     if ($activeGameId) {
         require_once __DIR__ . '/../classes/Game.php';
         $game = Game::find((int) $activeGameId);

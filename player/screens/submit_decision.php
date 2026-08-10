@@ -10,8 +10,8 @@ require_once __DIR__ . '/../../config/app_config.php';
 Auth::requireTeam();
 
 $db = Database::getInstance();
-$teamId = Session::get('team_id');
-$gameId = Session::get('game_id');
+$teamId = Session::currentTeamId();
+$gameId = Session::activeGameId();
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     header('Location: review_decision.php');

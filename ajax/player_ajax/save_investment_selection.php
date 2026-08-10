@@ -15,8 +15,8 @@ Auth::requireTeam();
 $input = json_decode(file_get_contents('php://input'), true) ?? [];
 $db = Database::getInstance();
 
-$teamId = Session::get('team_id');
-$gameId = Session::get('game_id');
+$teamId = Session::currentTeamId();
+$gameId = Session::activeGameId();
 $investmentId = (int) ($input['investment_id'] ?? 0);
 $investedValue = (float) ($input['invested_value'] ?? 0);
 

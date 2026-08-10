@@ -12,8 +12,8 @@ Auth::requireTeam();
 $input = json_decode(file_get_contents('php://input'), true) ?? [];
 $db = Database::getInstance();
 
-$teamId = Session::get('team_id');
-$gameId = Session::get('game_id');
+$teamId = Session::currentTeamId();
+$gameId = Session::activeGameId();
 $price = (float) ($input['selling_price'] ?? 0);
 $productionQty = (int) ($input['production_qty'] ?? 0);
 $estimatedUnitCost = (float) ($input['estimated_unit_cost'] ?? 0);

@@ -10,8 +10,8 @@ require_once __DIR__ . '/../../config/app_config.php';
 Auth::requireTeam();
 
 $db = Database::getInstance();
-$teamId = Session::get('team_id');
-$gameId = Session::get('game_id');
+$teamId = Session::currentTeamId();
+$gameId = Session::activeGameId();
 $yearNo = (int) ($_GET['year_no'] ?? 1);
 
 $investments = $db->fetchAll("SELECT investment_id, investment_name FROM investment_master WHERE game_id = :g ORDER BY display_order", ['g' => $gameId]);

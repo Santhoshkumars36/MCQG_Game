@@ -16,13 +16,18 @@ Auth::requireTeam();
 $input = json_decode(file_get_contents('php://input'), true) ?? [];
 $db = Database::getInstance();
 
-$teamId = Session::get('team_id');
-$gameId = Session::get('game_id');
+$teamId = Session::currentTeamId();
+$gameId = Session::activeGameId();
 $productionQty = (int) ($input['production_qty'] ?? 0);
 $investments = $input['investments'] ?? []; // [investment_id => invested_value]
 
 $game = $db->fetchOne("SELECT * FROM game_master WHERE game_id = :g", ['g' => $gameId]);
 $team = $db->fetchOne("SELECT * FROM team_master WHERE team_id = :t", ['t' => $teamId]);
+
+if (!$game || !$team) {
+    Response::error('Game or team session not active.');
+}
+
 $capacityDrivers = $db->fetchAll("SELECT * FROM capacity_driver WHERE game_id = :g", ['g' => $gameId]);
 
 $baseCosts = calculateCapacityDriverCosts((float) $game['capacity_cost'], $capacityDrivers);

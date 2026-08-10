@@ -9,11 +9,17 @@ require_once __DIR__ . '/../../config/app_config.php';
 Auth::requireTeam();
 
 $db = Database::getInstance();
-$teamId = Session::get('team_id');
-$gameId = Session::get('game_id');
+$teamId = Session::currentTeamId();
+$gameId = Session::activeGameId();
 
-$team = $db->fetchOne("SELECT * FROM team_master WHERE team_id = :t", ['t' => $teamId]);
-$game = $db->fetchOne("SELECT * FROM game_master WHERE game_id = :g", ['g' => $gameId]);
+$team = $teamId ? $db->fetchOne("SELECT * FROM team_master WHERE team_id = :t", ['t' => $teamId]) : null;
+$game = $gameId ? $db->fetchOne("SELECT * FROM game_master WHERE game_id = :g", ['g' => $gameId]) : null;
+
+if (!$team || !$game) {
+    Auth::logout();
+    header('Location: ' . PLAYER_URL . 'auth/login.php');
+    exit;
+}
 
 $currentRound = $db->fetchOne(
     "SELECT * FROM game_round_status WHERE game_id = :g AND status != 'Processed' ORDER BY year_no LIMIT 1",

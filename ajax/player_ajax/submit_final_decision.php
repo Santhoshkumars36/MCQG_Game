@@ -11,8 +11,8 @@ require_once __DIR__ . '/../../config/app_config.php';
 require_once __DIR__ . '/../../classes/Round.php';
 Auth::requireTeam();
 
-$teamId = Session::get('team_id');
-$gameId = Session::get('game_id');
+$teamId = Session::currentTeamId();
+$gameId = Session::activeGameId();
 
 $round = Round::currentForTeam($gameId, $teamId);
 if (!$round) {

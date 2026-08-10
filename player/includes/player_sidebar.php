@@ -9,7 +9,7 @@ function playerNavActive($page, $current) { return $page === $current ? 'active'
 <aside class="mcqg-sidebar" style="width:250px; background:var(--mcqg-navy); min-height:100vh; position:fixed; left:0; top:0; padding:20px 0;">
   <div style="padding:0 22px 22px; border-bottom:1px solid rgba(255,255,255,0.1);">
     <span style="color:#fff; font-weight:800; font-size:18px;">MCQG</span>
-    <div style="color:var(--mcqg-ice); font-size:11.5px;">Team: <?php echo htmlspecialchars(Session::get('team_name', 'Team')); ?></div>
+    <div style="color:var(--mcqg-ice); font-size:11.5px;">Team: <?php echo htmlspecialchars(Session::get(SESSION_TEAM_NAME, 'Team')); ?></div>
   </div>
 
   <nav style="padding:18px 12px;">

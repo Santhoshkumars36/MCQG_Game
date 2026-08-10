@@ -21,8 +21,23 @@ if (!defined('MCQG_APP')) {
 
 class Response
 {
-    public static function success($data = null, string $message = ''): void
+    /**
+     * Flexible success response handler.
+     * Supports both Response::success($message, $data) and Response::success($data, $message).
+     */
+    public static function success($param1 = null, $param2 = null): void
     {
+        $message = '';
+        $data = null;
+
+        if (is_string($param1) && (is_array($param2) || is_object($param2) || is_null($param2))) {
+            $message = $param1;
+            $data = $param2;
+        } else {
+            $data = $param1;
+            $message = is_string($param2) ? $param2 : '';
+        }
+
         header('Content-Type: application/json; charset=utf-8');
         echo json_encode([
             'success' => true,
