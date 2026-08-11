@@ -49,21 +49,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         );
 
         $existingTeamName = $db->fetchOne(
-            "SELECT team_id FROM team_master WHERE LOWER(TRIM(team_name)) = LOWER(:tn)",
-            ['tn' => $teamName]
+            "SELECT team_id FROM team_master WHERE LOWER(TRIM(team_name)) = LOWER(:tn) AND game_id = :gid",
+            ['tn' => $teamName, 'gid' => $gameId]
         );
 
         $existingUsername = $db->fetchOne(
-            "SELECT team_id FROM team_master WHERE LOWER(TRIM(username)) = LOWER(:u)",
-            ['u' => $username]
+            "SELECT team_id FROM team_master WHERE LOWER(TRIM(username)) = LOWER(:u) AND game_id = :gid",
+            ['u' => $username, 'gid' => $gameId]
         );
 
         if (!$selectedGame) {
             $error = 'Selected game is not active or available for registration.';
         } elseif ($existingTeamName) {
-            $error = 'Team Name "' . htmlspecialchars($teamName) . '" is already registered. Please choose another Team Name.';
+            $error = 'Team Name "' . htmlspecialchars($teamName) . '" is already registered in this game session. Please choose another Team Name.';
         } elseif ($existingUsername) {
-            $error = 'Username "' . htmlspecialchars($username) . '" is already taken. Please choose another Username.';
+            $error = 'Username "' . htmlspecialchars($username) . '" is already registered in this game session. Please choose another Username.';
         } else {
             // Register new team in database
             $openingInventory = (int)($selectedGame['starting_inventory'] ?? 0);
@@ -280,7 +280,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div class="mb-3">
           <label class="form-label small fw-bold text-secondary mb-1">Select Game Session <span class="text-danger">*</span></label>
           <div class="form-floating-custom">
-            <select name="game_id" class="form-select" required>
+            <select name="game_id" id="game_id" class="form-select" required>
               <?php foreach ($publishedGames as $g): ?>
                 <option value="<?php echo (int)$g['game_id']; ?>">
                   <?php echo htmlspecialchars($g['game_name']); ?> (Product: <?php echo htmlspecialchars($g['product_name']); ?>)
@@ -385,20 +385,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       }
     }
 
+    const gameSelect = document.getElementById('game_id');
+
     let availabilityTimer;
     function checkUniqueness() {
       clearTimeout(availabilityTimer);
       availabilityTimer = setTimeout(async () => {
         const teamName = teamNameInput ? teamNameInput.value.trim() : '';
         const username = usernameInput ? usernameInput.value.trim() : '';
+        const gameId = gameSelect ? gameSelect.value : '';
 
+        if (!gameId) return;
         if (!teamName && !username) return;
 
         try {
           const res = await fetch('<?php echo AJAX_URL; ?>player_ajax/check_team_exists.php', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ team_name: teamName, username: username })
+            body: JSON.stringify({ team_name: teamName, username: username, game_id: parseInt(gameId) })
           });
           const json = await res.json();
           if (json.success) {
@@ -406,20 +410,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
               teamNameStatus.style.display = 'flex';
               if (json.data.team_name_exists) {
                 teamNameStatus.className = 'match-status invalid';
-                teamNameStatus.innerHTML = '<i class="fa-solid fa-circle-xmark"></i> Team Name is already registered!';
+                teamNameStatus.innerHTML = '<i class="fa-solid fa-circle-xmark"></i> Team Name is already registered in this game!';
               } else {
                 teamNameStatus.className = 'match-status valid';
-                teamNameStatus.innerHTML = '<i class="fa-solid fa-circle-check"></i> Team Name is available';
+                teamNameStatus.innerHTML = '<i class="fa-solid fa-circle-check"></i> Team Name is available for this game';
               }
             }
             if (username && usernameStatus) {
               usernameStatus.style.display = 'flex';
               if (json.data.username_exists) {
                 usernameStatus.className = 'match-status invalid';
-                usernameStatus.innerHTML = '<i class="fa-solid fa-circle-xmark"></i> Username is already taken!';
+                usernameStatus.innerHTML = '<i class="fa-solid fa-circle-xmark"></i> Username is already registered in this game!';
               } else {
                 usernameStatus.className = 'match-status valid';
-                usernameStatus.innerHTML = '<i class="fa-solid fa-circle-check"></i> Username is available';
+                usernameStatus.innerHTML = '<i class="fa-solid fa-circle-check"></i> Username is available for this game';
               }
             }
           }
@@ -434,6 +438,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (teamNameInput) teamNameInput.addEventListener('input', checkUniqueness);
     if (usernameInput) usernameInput.addEventListener('input', checkUniqueness);
+    // Re-validate when game selection changes
+    if (gameSelect) gameSelect.addEventListener('change', checkUniqueness);
   </script>
 
   <?php if ($success): ?>

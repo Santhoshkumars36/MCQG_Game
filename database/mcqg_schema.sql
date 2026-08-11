@@ -220,7 +220,7 @@ CREATE TABLE IF NOT EXISTS team_master (
     team_id           INT AUTO_INCREMENT PRIMARY KEY,
     game_id            INT NOT NULL,
     team_name          VARCHAR(150) NOT NULL,
-    username           VARCHAR(100) NOT NULL UNIQUE,
+    username           VARCHAR(100) NOT NULL,
     password_hash      VARCHAR(255) NOT NULL,
     opening_inventory  INT NOT NULL DEFAULT 0,
     opening_budget     DECIMAL(18,2) NOT NULL DEFAULT 0,
@@ -229,7 +229,9 @@ CREATE TABLE IF NOT EXISTS team_master (
     deletedOn          DATETIME NULL,
     createdOn          DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT fk_team_game FOREIGN KEY (game_id) REFERENCES game_master(game_id)
-        ON DELETE CASCADE ON UPDATE CASCADE
+        ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT uq_team_game_teamname UNIQUE (game_id, team_name),
+    CONSTRAINT uq_team_game_username UNIQUE (game_id, username)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ---------------------------------------------------------------------

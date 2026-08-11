@@ -139,8 +139,11 @@ require_once __DIR__ . '/../includes/admin_header.php';
                      placeholder="Market Demand" value="<?php echo (int) $row['market_demand']; ?>" required>
             </div>
             <div class="col-4">
-              <input type="number" step="0.01" class="form-control mcqg-input-live" name="inflation_percent[<?php echo (int) $row['year_no']; ?>]"
-                     placeholder="Inflation %" value="<?php echo (float) $row['inflation_percent']; ?>" required>
+              <div class="input-group">
+                <input type="number" step="0.01" class="form-control mcqg-input-live" name="inflation_percent[<?php echo (int) $row['year_no']; ?>]"
+                       placeholder="Inflation" value="<?php echo (float) $row['inflation_percent']; ?>" required>
+                <span class="input-group-text fw-bold">%</span>
+              </div>
             </div>
           </div>
         <?php endforeach; ?>
@@ -159,7 +162,7 @@ require_once __DIR__ . '/../includes/admin_header.php';
   function refreshUnitCost() {
     const cost = parseFloat(document.getElementById('capacity_cost').value) || 0;
     const cap = parseFloat(document.getElementById('starting_capacity').value) || 0;
-    const unit = cap > 0 ? (cost / cap).toFixed(4) : '0.0000';
+    const unit = cap > 0 ? (cost / cap).toFixed(2) : '0.00';
     document.getElementById('unit_cost_display').value = unit;
   }
   document.getElementById('capacity_cost').addEventListener('input', refreshUnitCost);
