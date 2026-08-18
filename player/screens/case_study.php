@@ -57,8 +57,13 @@ require_once __DIR__ . '/../includes/player_header.php';
 <div class="row g-4">
   <div class="col-lg-8">
     <div class="mcqg-card">
-      <div class="mcqg-card-header"><h2><?php echo htmlspecialchars($game['game_name']); ?></h2></div>
-      <div style="line-height:1.7;"><?php echo $game['description']; ?></div>
+      <div class="mcqg-card-header d-flex align-items-center gap-3">
+        <?php if ($csImg = Game::getImageUrl($game)): ?>
+          <img src="<?php echo $csImg; ?>" alt="Game Thumbnail" class="rounded border shadow-sm" style="width: 48px; height: 48px; object-fit: cover;">
+        <?php endif; ?>
+        <h2 class="m-0"><?php echo htmlspecialchars($game['game_name']); ?></h2>
+      </div>
+      <div style="line-height:1.7;" class="mt-3"><?php echo $game['description']; ?></div>
     </div>
   </div>
 

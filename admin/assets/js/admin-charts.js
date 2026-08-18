@@ -1,14 +1,20 @@
 /* =========================================================
    MCQG Admin - Reports Charts JS
    Path: admin/assets/js/admin-charts.js
-   Requires Chart.js (loaded via assets/js/ shared library).
+   Requires Chart.js (loaded via assets/js/ or CDN).
    ========================================================= */
 
-document.addEventListener("DOMContentLoaded", function () {
+function initAdminCharts() {
   renderCumulativeProfitChart();
   renderMarketShareChart();
   renderInvestmentMatrix();
-});
+}
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", initAdminCharts);
+} else {
+  initAdminCharts();
+}
 
 /** Reads JSON data embedded by the PHP report page in a
  *  <script type="application/json" id="..."> tag, keeping
@@ -26,24 +32,59 @@ function readEmbeddedData(elementId) {
 function renderCumulativeProfitChart() {
   const ctx = document.getElementById("mcqg-cumulative-profit-chart");
   const data = readEmbeddedData("cumulative-profit-data");
-  if (!ctx || !data) return;
+  if (!ctx || !data || typeof Chart === "undefined") return;
+
+  if (ctx.getAttribute("data-chart-rendered")) return;
+  ctx.setAttribute("data-chart-rendered", "true");
+
+  const colors = [
+    "#1e2761", "#c99a2e", "#1f9d55", "#e74c3c", 
+    "#8e44ad", "#3498db", "#e67e22", "#1abc9c", "#d35400", "#2c3e50"
+  ];
+
+  const labels = (data.years && data.years.length > 0) ? data.years : ["Year 1"];
 
   new Chart(ctx, {
     type: "line",
     data: {
-      labels: data.years,
-      datasets: data.teams.map((team, i) => ({
+      labels: labels,
+      datasets: (data.teams || []).map((team, i) => ({
         label: team.team_name,
         data: team.profit_by_year,
+        borderColor: colors[i % colors.length],
+        backgroundColor: colors[i % colors.length],
         borderWidth: 3,
         tension: 0.35,
         fill: false,
+        pointRadius: 5,
+        pointHoverRadius: 7
       })),
     },
     options: {
       responsive: true,
-      plugins: { legend: { position: "bottom" } },
-      scales: { y: { ticks: { callback: (v) => "\u20B9" + v.toLocaleString() } } },
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { position: "bottom" },
+        tooltip: {
+          callbacks: {
+            label: function(context) {
+              let label = context.dataset.label || '';
+              if (label) label += ': ';
+              if (context.parsed.y !== null) {
+                label += '\u20B9' + Number(context.parsed.y).toLocaleString();
+              }
+              return label;
+            }
+          }
+        }
+      },
+      scales: {
+        y: {
+          ticks: {
+            callback: (v) => "\u20B9" + Number(v).toLocaleString()
+          }
+        }
+      },
     },
   });
 }
@@ -51,7 +92,10 @@ function renderCumulativeProfitChart() {
 function renderMarketShareChart() {
   const ctx = document.getElementById("mcqg-market-share-chart");
   const data = readEmbeddedData("market-share-data");
-  if (!ctx || !data) return;
+  if (!ctx || !data || typeof Chart === "undefined") return;
+
+  if (ctx.getAttribute("data-chart-rendered")) return;
+  ctx.setAttribute("data-chart-rendered", "true");
 
   new Chart(ctx, {
     type: "doughnut",
@@ -59,7 +103,7 @@ function renderMarketShareChart() {
       labels: data.labels,
       datasets: [{ data: data.values, backgroundColor: ["#1e2761", "#c99a2e", "#1f9d55", "#5b5f6b"] }],
     },
-    options: { responsive: true, plugins: { legend: { position: "right" } } },
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: "right" } } },
   });
 }
 

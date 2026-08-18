@@ -11,6 +11,7 @@
   <script src="<?php echo ASSET_URL; ?>js/jquery.min.js"></script>
   <script src="<?php echo ASSET_URL; ?>js/bootstrap.bundle.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="<?php echo ASSET_URL; ?>js/common.js"></script>
   <script src="<?php echo ADMIN_URL; ?>assets/js/admin-main.js"></script>
   <script src="<?php echo ADMIN_URL; ?>assets/js/admin-wizard-validation.js"></script>

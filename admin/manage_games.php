@@ -47,7 +47,14 @@ require_once __DIR__ . '/includes/admin_header.php';
         $badgeClass = $g['status'] === 'Published' ? 'mcqg-badge-published' : ($g['status'] === 'Completed' ? 'mcqg-badge-completed' : 'mcqg-badge-draft');
       ?>
       <tr>
-        <td class="fw-bold"><?php echo htmlspecialchars($g['game_name']); ?></td>
+        <td class="fw-bold">
+          <div class="d-flex align-items-center gap-2">
+            <?php if ($gImg = Game::getImageUrl($g)): ?>
+              <img src="<?php echo $gImg; ?>" alt="Game Image" class="rounded border" style="width:32px; height:32px; object-fit:cover;">
+            <?php endif; ?>
+            <span><?php echo htmlspecialchars($g['game_name']); ?></span>
+          </div>
+        </td>
         <td><?php echo (int) $g['no_of_years']; ?></td>
         <td><?php echo htmlspecialchars($g['currency']); ?></td>
         <td><span class="mcqg-badge <?php echo $badgeClass; ?>"><?php echo $g['status']; ?></span></td>
@@ -69,7 +76,12 @@ require_once __DIR__ . '/includes/admin_header.php';
 <?php if ($selectedGame): ?>
 <div class="mcqg-card">
   <div class="mcqg-card-header d-flex justify-content-between align-items-center">
-    <h3 class="m-0"><?php echo htmlspecialchars($selectedGame['game_name']); ?> - Overview</h3>
+    <h3 class="m-0 d-flex align-items-center gap-2">
+      <?php if ($selImg = Game::getImageUrl($selectedGame)): ?>
+        <img src="<?php echo $selImg; ?>" alt="Game Logo" class="rounded border" style="width:36px; height:36px; object-fit:cover;">
+      <?php endif; ?>
+      <span><?php echo htmlspecialchars($selectedGame['game_name']); ?> - Overview</span>
+    </h3>
     <div>
       <a href="game_setup/step1_title_case_study.php?game_id=<?php echo $selectedGame['game_id']; ?>" class="btn btn-sm btn-warning me-1"><i class="fas fa-edit me-1"></i> Edit Game</a>
       <button type="button" onclick="confirmDeleteGame(<?php echo $selectedGame['game_id']; ?>, '<?php echo addslashes(htmlspecialchars($selectedGame['game_name'])); ?>')" class="btn btn-sm btn-danger"><i class="fas fa-trash-alt me-1"></i> Delete Game</button>

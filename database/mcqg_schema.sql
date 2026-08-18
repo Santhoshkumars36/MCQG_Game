@@ -36,6 +36,7 @@ CREATE TABLE IF NOT EXISTS game_master (
     game_id             INT AUTO_INCREMENT PRIMARY KEY,
     game_name           VARCHAR(150) NOT NULL,
     description         TEXT NULL,                     -- Case Study (rich text)
+    game_image          VARCHAR(255) NULL DEFAULT NULL, -- Game thumbnail / logo
     no_of_years         INT NOT NULL DEFAULT 5,
     product_name        VARCHAR(100) NOT NULL,
     unit_of_measure     VARCHAR(50)  NOT NULL DEFAULT 'Units',
@@ -53,7 +54,8 @@ CREATE TABLE IF NOT EXISTS game_master (
                                THEN capacity_cost / starting_capacity
                                ELSE 0 END) STORED,             -- read-only, auto-calculated
     demand              INT NOT NULL DEFAULT 0,                -- core configuration numeric field
-    sales_price_tolerance_percent DECIMAL(6,2) NOT NULL DEFAULT 0,  -- Slide 7
+    tolerance_percent   DECIMAL(6,2) NOT NULL DEFAULT 20.00,   -- Slide 8 Tolerance %
+    sales_price_tolerance_percent DECIMAL(6,2) NOT NULL DEFAULT 20.00,  -- Slide 7
     status              ENUM('Draft','Published','Completed') NOT NULL DEFAULT 'Draft',
     created_by          INT NULL,
     isDeleted           BIT NOT NULL DEFAULT 0,

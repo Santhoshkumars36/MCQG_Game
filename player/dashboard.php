@@ -50,10 +50,15 @@ require_once __DIR__ . '/includes/player_header.php';
 <h2 class="mb-3" style="color:var(--mcqg-navy); font-weight:800;">Welcome, <?php echo htmlspecialchars($team['team_name'] ?? 'Team'); ?></h2>
 
 <?php if ($currentRound): ?>
-<div class="mcqg-round-banner">
-  <div>
-    <h3>Year <?php echo (int) $yearNo; ?> of <?php echo (int) ($game['no_of_years'] ?? 0); ?></h3>
-    <p><?php echo htmlspecialchars($game['game_name'] ?? ''); ?></p>
+<div class="mcqg-round-banner d-flex align-items-center justify-content-between">
+  <div class="d-flex align-items-center gap-3">
+    <?php if ($pGameImg = Game::getImageUrl($game)): ?>
+      <img src="<?php echo $pGameImg; ?>" alt="Game Logo" class="rounded border shadow-sm" style="width:48px; height:48px; object-fit:cover; background:#fff;">
+    <?php endif; ?>
+    <div>
+      <h3 class="m-0">Year <?php echo (int) $yearNo; ?> of <?php echo (int) ($game['no_of_years'] ?? 0); ?></h3>
+      <p class="m-0 text-white-50"><?php echo htmlspecialchars($game['game_name'] ?? ''); ?></p>
+    </div>
   </div>
   <span class="mcqg-badge <?php echo $isSubmitted ? 'mcqg-badge-processed' : 'mcqg-badge-open'; ?>">
     <?php echo $isSubmitted ? 'Submitted - Waiting for other teams' : 'Decision In Progress'; ?>

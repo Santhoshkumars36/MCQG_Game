@@ -60,8 +60,13 @@ require_once __DIR__ . '/includes/admin_header.php';
       $badgeClass = $g['status'] === 'Published' ? 'mcqg-badge-published' : ($g['status'] === 'Completed' ? 'mcqg-badge-completed' : 'mcqg-badge-draft');
     ?>
     <div class="mcqg-game-tile">
-      <div class="mcqg-game-tile-header">
-        <span class="text-truncate me-2" title="<?php echo htmlspecialchars($g['game_name']); ?>"><?php echo htmlspecialchars($g['game_name']); ?></span>
+      <div class="mcqg-game-tile-header d-flex align-items-center justify-content-between">
+        <div class="d-flex align-items-center gap-2 overflow-hidden">
+          <?php if ($gameImg = Game::getImageUrl($g)): ?>
+            <img src="<?php echo $gameImg; ?>" alt="Thumbnail" class="rounded" style="width: 28px; height: 28px; object-fit: cover; border: 1px solid rgba(255,255,255,0.3);">
+          <?php endif; ?>
+          <span class="text-truncate" title="<?php echo htmlspecialchars($g['game_name']); ?>"><?php echo htmlspecialchars($g['game_name']); ?></span>
+        </div>
         <span class="mcqg-badge <?php echo $badgeClass; ?>"><?php echo $g['status']; ?></span>
       </div>
       <div class="mcqg-game-tile-body">

@@ -70,6 +70,10 @@ define('ROLE_TEAM', 'team');
 // Demand Driver "Demand share %" must each total exactly this value.
 define('DRIVER_SHARE_TOTAL_REQUIRED', 100.00);
 
+// Driver type identifiers (match investment_effect.driver_type ENUM values)
+define('DRIVER_TYPE_CAPACITY', 'Capacity');
+define('DRIVER_TYPE_DEMAND', 'Demand');
+
 // Doc 3 (MG19), Slide 3: Admin setup wizard has exactly 7 steps.
 define('GAME_SETUP_TOTAL_STEPS', 7);
 

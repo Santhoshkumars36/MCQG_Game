@@ -23,7 +23,7 @@ function getTeamInvestmentEffects(int $decisionId): array
 {
     $db = Database::getInstance();
 
-    $sql = "SELECT ie.driver_type, ie.driver_id, ie.effect_type_placeholder,
+    $sql = "SELECT ie.driver_type, ie.driver_id,
                    ie.min_percent, ie.max_percent, tis.invested_percent,
                    tis.invested_value, ie.investment_id
             FROM team_investment_selection tis

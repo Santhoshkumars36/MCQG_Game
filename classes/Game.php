@@ -41,16 +41,17 @@ class Game
         $db = Database::getInstance();
         $id = $db->insert(
             'INSERT INTO game_master
-                (game_name, description, no_of_years, product_name, unit_of_measure, currency,
+                (game_name, description, game_image, no_of_years, product_name, unit_of_measure, currency,
                  starting_cash, starting_capacity, starting_inventory, starting_plant_value, status)
              VALUES
-                (:game_name, :description, :no_of_years, :product_name, :unit_of_measure, :currency,
+                (:game_name, :description, :game_image, :no_of_years, :product_name, :unit_of_measure, :currency,
                  :starting_cash, :starting_capacity, :starting_inventory, :starting_plant_value, :status)',
             [
                 ':game_name'            => $data['game_name'],
                 ':description'          => $data['description'] ?? '',   // rich-text Case Study (Slide 3)
+                ':game_image'           => $data['game_image'] ?? null,
                 ':no_of_years'          => $data['no_of_years'] ?? DEFAULT_NO_OF_YEARS,
-                ':product_name'         => $data['product_name'],
+                ':product_name'         => $data['product_name'] ?? 'Untitled Product',
                 ':unit_of_measure'      => $data['unit_of_measure'] ?? 'Units',
                 ':currency'             => $data['currency'] ?? 'INR', // free text, not a dropdown (Slide 4)
                 ':starting_cash'        => $data['starting_cash'] ?? 0,
@@ -70,20 +71,26 @@ class Game
         Database::getInstance()->execute(
             'UPDATE game_master SET
                 demand = :demand,
+                starting_cash = :starting_cash,
+                starting_capacity = :starting_capacity,
                 capacity_cost = :capacity_cost,
                 minimum_capacity = :minimum_capacity,
                 maximum_capacity = :maximum_capacity,
                 capacity_increment = :capacity_increment,
                 no_of_years = :no_of_years,
+                unit_of_measure = :unit_of_measure,
                 currency = :currency
              WHERE game_id = :game_id',
             [
                 ':demand'             => $data['demand'],
+                ':starting_cash'      => $data['starting_cash'] ?? 0,
+                ':starting_capacity'  => $data['starting_capacity'] ?? 0,
                 ':capacity_cost'      => $data['capacity_cost'],
                 ':minimum_capacity'   => $data['minimum_capacity'],
                 ':maximum_capacity'   => $data['maximum_capacity'],
                 ':capacity_increment' => $data['capacity_increment'],
                 ':no_of_years'        => $data['no_of_years'],
+                ':unit_of_measure'    => $data['unit_of_measure'] ?? 'Numbers',
                 ':currency'           => $data['currency'],
                 ':game_id'            => $gameId,
             ]
@@ -195,5 +202,18 @@ class Game
     public static function isPlayable(array $game): bool
     {
         return $game['status'] === GAME_STATUS_PUBLISHED;
+    }
+
+    /**
+     * Get web URL for game thumbnail/image if one was uploaded.
+     * Returns null if no custom image was uploaded for the game.
+     */
+    public static function getImageUrl($gameOrPath = null): ?string
+    {
+        $path = is_array($gameOrPath) ? ($gameOrPath['game_image'] ?? null) : $gameOrPath;
+        if (!empty($path) && file_exists(ROOT_PATH . '/' . ltrim($path, '/\\'))) {
+            return BASE_URL . '/' . ltrim($path, '/\\');
+        }
+        return null;
     }
 }

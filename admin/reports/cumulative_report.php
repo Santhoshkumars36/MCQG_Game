@@ -26,9 +26,17 @@ foreach ($teams as $t) {
     $standings[] = ['team_name' => $t['team_name'], 'cumulative_profit' => $cumulative];
 
     $byYear = array_column($rows, 'operating_profit', 'year_no');
+    $runningSum = 0;
+    $profitTrend = [];
+    foreach ($years as $y) {
+        $yNo = $y['year_no'];
+        $runningSum += (float) ($byYear[$yNo] ?? 0);
+        $profitTrend[] = $runningSum;
+    }
+
     $chartTeams[] = [
         'team_name' => $t['team_name'],
-        'profit_by_year' => array_map(fn($y) => (float) ($byYear[$y['year_no']] ?? 0), $years),
+        'profit_by_year' => $profitTrend,
     ];
 }
 usort($standings, fn($a, $b) => $b['cumulative_profit'] <=> $a['cumulative_profit']);
@@ -69,7 +77,7 @@ require_once __DIR__ . '/../includes/admin_header.php';
   </table>
 
   <div class="mcqg-card-header"><h3>Profit Trend</h3></div>
-  <div class="mcqg-chart-card">
+  <div class="mcqg-chart-card" style="position: relative; height: 350px; width: 100%;">
     <canvas id="mcqg-cumulative-profit-chart"></canvas>
   </div>
   <script type="application/json" id="cumulative-profit-data">
