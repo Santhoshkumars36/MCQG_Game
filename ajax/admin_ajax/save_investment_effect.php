@@ -17,30 +17,22 @@ $input = json_decode(file_get_contents('php://input'), true) ?? [];
 $investmentId = (int) ($input['investment_id'] ?? 0);
 $driverType = $input['driver_type'] ?? DRIVER_TYPE_CAPACITY;
 $driverId = (int) ($input['driver_id'] ?? 0);
-$minPercent = (float) ($input['min_percent'] ?? 0);
-$maxPercent = (float) ($input['max_percent'] ?? 0);
-$incrementPercent = (float) ($input['increment_percent'] ?? 0.1);
+$effectDirection = ($input['effect_direction'] ?? 'Negative') === 'Positive' ? 'Positive' : 'Negative';
+$val = ($effectDirection === 'Positive') ? 1.0 : -1.0;
+$minPercent = $val;
+$maxPercent = $val;
+$incrementPercent = 0.0;
 
 if (!$investmentId || !$driverId) {
     Response::error('Investment and driver are both required.');
-}
-if (!Validator::isValidEffectPercent($minPercent) || !Validator::isValidEffectPercent($maxPercent)) {
-    Response::error('Effect percentages must be between -100 and 100.');
-}
-if ($minPercent > $maxPercent) {
-    Response::error('Min % cannot be greater than Max %.');
 }
 
 $investment = Investment::find($investmentId);
 $driver = $driverType === DRIVER_TYPE_DEMAND ? DemandDriver::find($driverId) : CapacityDriver::find($driverId);
 $driverName = $driver['driver_name'] ?? 'the linked driver';
 
-$injectMessage = InvestmentEffect::generateInjectMessage(
-    $investment['investment_name'] ?? 'This investment',
-    $driverName,
-    $minPercent,
-    $maxPercent
-);
+$invName = $investment['investment_name'] ?? 'This investment';
+$injectMessage = "{$invName} " . ($effectDirection === 'Positive' ? 'increases' : 'reduces') . " {$driverName}.";
 
 $effectId = InvestmentEffect::create($investmentId, $driverType, $driverId, $minPercent, $maxPercent, $incrementPercent, $injectMessage);
 

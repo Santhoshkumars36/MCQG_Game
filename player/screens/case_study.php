@@ -54,6 +54,15 @@ require_once __DIR__ . '/../includes/player_header.php';
   <span class="mcqg-badge mcqg-badge-open">Round Open</span>
 </div>
 
+<?php 
+$isLiveRound = $currentRound && ($currentRound['status'] === 'Live' || $currentRound['status'] === 'Open');
+if (!$isLiveRound || isset($_GET['msg']) && $_GET['msg'] === 'not_launched'):
+?>
+<div class="alert alert-warning border-warning shadow-sm mb-4 fw-semibold" style="border-left:5px solid #f59e0b;">
+  🔒 Round <?php echo (int)$yearNo; ?> has not been launched yet by the Moderator. You can read the Case Study scenario below while waiting for the trainer to click LAUNCH.
+</div>
+<?php endif; ?>
+
 <div class="row g-4">
   <div class="col-lg-8">
     <div class="mcqg-card">
@@ -83,7 +92,11 @@ require_once __DIR__ . '/../includes/player_header.php';
         <span class="value" style="color:var(--mcqg-navy);"><?php echo (int) $game['no_of_years'] - $yearNo + 1; ?></span>
       </div>
 
-      <a href="build_production.php" class="btn btn-mcqg-gold w-100 mt-3">Start Building Production &rarr;</a>
+      <?php if ($isLiveRound): ?>
+        <a href="build_production.php" class="btn btn-mcqg-gold w-100 mt-3">Start Building Production &rarr;</a>
+      <?php else: ?>
+        <button class="btn btn-secondary w-100 mt-3" disabled style="opacity:0.75;">🔒 Waiting for Moderator Launch</button>
+      <?php endif; ?>
     </div>
   </div>
 </div>

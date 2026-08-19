@@ -41,15 +41,23 @@ class DemandDriver
         return Database::getInstance()->delete('demand_driver', 'driver_id = :d', ['d' => $driverId]);
     }
 
-    /** MG19 Slide 5: Demand share % across all drivers for a game must total exactly 100% */
+    /** MG19 Slide 8: Demand share % total */
     public static function totalDemandSharePercent(int $gameId): float
     {
         $rows = self::forGame($gameId);
         return array_sum(array_map('floatval', array_column($rows, 'demand_share_percent')));
     }
 
+    public static function getTotalDemandSharePercent(int $gameId): float
+    {
+        return self::totalDemandSharePercent($gameId);
+    }
+
     public static function isBalanced(int $gameId): bool
     {
-        return abs(self::totalDemandSharePercent($gameId) - PERCENT_TOTAL_REQUIRED) < 0.01;
+        require_once __DIR__ . '/CapacityDriver.php';
+        $capTotal = CapacityDriver::totalCostSharePercent($gameId);
+        $demandTotal = self::totalDemandSharePercent($gameId);
+        return abs(($capTotal + $demandTotal) - 100.00) < 0.01;
     }
 }

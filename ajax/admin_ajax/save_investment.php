@@ -18,7 +18,7 @@ $description = trim($input['description'] ?? '');
 $minValue = (float) ($input['min_investment_value'] ?? 0);
 $maxValue = (float) ($input['max_investment_value'] ?? 0);
 $increment = (float) ($input['increment_value'] ?? 1);
-$effectiveFrom = $input['effective_from'] ?? EFFECTIVE_IMMEDIATE;
+$effectiveFrom = $input['effective_from'] ?? 'Immediate';
 $repeatAllowed = !empty($input['repeat_allowed']) ? 1 : 0;
 $purchaseLimit = (int) ($input['purchase_limit'] ?? 1);
 

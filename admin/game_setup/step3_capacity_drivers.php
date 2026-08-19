@@ -34,6 +34,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (empty($groupNames)) {
         $error = "Please add at least one capacity driver.";
+    } elseif ($total <= 0) {
+        $error = "Capacity drivers cost share total must be greater than 0%.";
+    } elseif ($total > 100) {
+        $error = "Capacity drivers cost share total cannot exceed 100% (currently {$total}%).";
     } else {
         // Save Tolerance % to game_master
         $db->update('game_master', [

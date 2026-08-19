@@ -56,6 +56,7 @@ CREATE TABLE IF NOT EXISTS game_master (
     demand              INT NOT NULL DEFAULT 0,                -- core configuration numeric field
     tolerance_percent   DECIMAL(6,2) NOT NULL DEFAULT 20.00,   -- Slide 8 Tolerance %
     sales_price_tolerance_percent DECIMAL(6,2) NOT NULL DEFAULT 20.00,  -- Slide 7
+    sales_price         DECIMAL(18,2) NOT NULL DEFAULT 0.00,   -- Benchmark Sales Price (Slide 10)
     status              ENUM('Draft','Published','Completed') NOT NULL DEFAULT 'Draft',
     created_by          INT NULL,
     isDeleted           BIT NOT NULL DEFAULT 0,

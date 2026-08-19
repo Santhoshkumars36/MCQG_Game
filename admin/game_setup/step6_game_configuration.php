@@ -23,15 +23,22 @@ foreach ($existingRules as $r) { $rulesByYear[$r['year_no']] = $r; }
 
 $error = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $salesPrice = (float) ($_POST['sales_price'] ?? 0);
     $tolerance = (float) ($_POST['sales_price_tolerance_percent'] ?? 0);
     $priceTick = $_POST['price_tick'] ?? [];
     $minPct = $_POST['min_percent'] ?? [];
     $demandDriverPct = $_POST['demand_driver_percent'] ?? [];
 
-    if (!Validator::inRange($tolerance, 0, 100)) {
+    $startingCap = (float) ($game['starting_capacity'] ?? 0);
+    $capCost = (float) ($game['capacity_cost'] ?? 0);
+    $unitCost = $startingCap > 0 ? ($capCost / $startingCap) : 0;
+
+    if ($salesPrice <= $unitCost && $unitCost > 0) {
+        $error = 'Sales price must be higher than the unit cost of capacity (' . number_format($unitCost, 2) . ').';
+    } elseif (!Validator::inRange($tolerance, 0, 100)) {
         $error = 'Sales price tolerance must be between 0 and 100%.';
     } else {
-        $db->update('game_master', ['sales_price_tolerance_percent' => $tolerance], 'game_id = :g', ['g' => $gameId]);
+        Game::updateSalesPriceTolerance($gameId, $tolerance, $salesPrice);
 
         for ($y = 1; $y <= $years; $y++) {
             $data = [
@@ -50,6 +57,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         header('Location: step7_publish.php');
         exit;
     }
+}
+
+$startingCap = (float) ($game['starting_capacity'] ?? 0);
+$capCost = (float) ($game['capacity_cost'] ?? 0);
+$unitCost = $startingCap > 0 ? ($capCost / $startingCap) : 0;
+$salesPriceVal = (float) ($game['sales_price'] ?? 0);
+if ($salesPriceVal <= 0 && $unitCost > 0) {
+    $salesPriceVal = round($unitCost * 1.25, 2); // Default benchmark price 25% above unit cost
 }
 
 $pageTitle = 'Game Setup - Step 6';
@@ -78,11 +93,25 @@ require_once __DIR__ . '/../includes/admin_header.php';
     <?php if ($error): ?><div class="alert alert-danger"><?php echo htmlspecialchars($error); ?></div><?php endif; ?>
 
     <form method="POST">
-      <div class="mb-4" style="max-width:320px;">
-        <label class="form-label fw-bold">Sales Price Tolerance %</label>
-        <input type="number" step="0.01" name="sales_price_tolerance_percent" class="form-control"
-               value="<?php echo htmlspecialchars($game['sales_price_tolerance_percent'] ?? '0'); ?>" required>
-        <small class="text-muted">How far a team's selling price is allowed to move.</small>
+      <div class="row g-3 mb-4" style="max-width:650px;">
+        <div class="col-md-6">
+          <label class="form-label fw-bold">Sales Price</label>
+          <div class="input-group">
+            <input type="number" step="0.01" name="sales_price" class="form-control"
+                   value="<?php echo htmlspecialchars((string)$salesPriceVal); ?>" required>
+            <span class="input-group-text fw-semibold"><?php echo htmlspecialchars($game['currency'] ?? 'INR'); ?></span>
+          </div>
+          <small class="text-muted">Must be higher than cost of capacity (<?php echo htmlspecialchars($game['currency'] ?? 'INR'); ?> <?php echo number_format($unitCost, 2); ?>).</small>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label fw-bold">Sales Price Tolerance %</label>
+          <div class="input-group">
+            <input type="number" step="0.01" name="sales_price_tolerance_percent" class="form-control"
+                   value="<?php echo htmlspecialchars((string)($game['sales_price_tolerance_percent'] ?? '5.00')); ?>" required>
+            <span class="input-group-text fw-bold">%</span>
+          </div>
+          <small class="text-muted">How far a team's selling price is allowed to move.</small>
+        </div>
       </div>
 
       <h5 class="fw-bold" style="color:var(--mcqg-navy);">Demand Allocation Logic (per period)</h5>
@@ -96,10 +125,10 @@ require_once __DIR__ . '/../includes/admin_header.php';
             <td class="fw-bold">Year <?php echo $y; ?></td>
             <td><input type="checkbox" name="price_tick[<?php echo $y; ?>]" class="form-check-input"
                        <?php echo (!$r || $r['price_tick']) ? 'checked' : ''; ?>></td>
-            <td><input type="number" step="0.01" name="min_percent[<?php echo $y; ?>]" class="form-control"
-                       value="<?php echo htmlspecialchars($r['min_percent'] ?? '0'); ?>"></td>
-            <td><input type="number" step="0.01" name="demand_driver_percent[<?php echo $y; ?>]" class="form-control"
-                       value="<?php echo htmlspecialchars($r['demand_driver_percent'] ?? '0'); ?>"></td>
+            <td><input type="number" step="0.01" name="min_percent[<?php echo $y; ?>]" class="form-control" placeholder="Min %"
+                       value="<?php echo htmlspecialchars((string)($r['min_percent'] ?? '20.00')); ?>"></td>
+            <td><input type="number" step="0.01" name="demand_driver_percent[<?php echo $y; ?>]" class="form-control" placeholder="Demand Driver %"
+                       value="<?php echo htmlspecialchars((string)($r['demand_driver_percent'] ?? '30.00')); ?>"></td>
           </tr>
           <?php endfor; ?>
         </tbody>

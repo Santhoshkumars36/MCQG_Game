@@ -22,11 +22,12 @@ $investments = $db->fetchAll("SELECT * FROM investment_master WHERE game_id = :g
 
 $capacityTotal = array_sum(array_column($capacityDrivers, 'cost_share_percent'));
 $demandTotal = array_sum(array_column($demandDrivers, 'demand_share_percent'));
-$readyToPublish = (abs($capacityTotal - 100) < 0.01) && (abs($demandTotal - 100) < 0.01) && count($investments) > 0;
+$combinedTotal = round($capacityTotal + $demandTotal, 2);
+$readyToPublish = (abs($combinedTotal - 100.00) < 0.01) && count($investments) > 0;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['publish'])) {
     if (!$readyToPublish) {
-        Session::setFlash('error', 'Cannot publish - Capacity/Demand Driver totals must equal 100% and at least one investment must exist.');
+        Session::setFlash('error', 'Cannot publish — Combined Capacity and Demand Driver totals must equal 100% and at least one investment must exist.');
     } else {
         $db->update('game_master', ['status' => GAME_STATUS_PUBLISHED], 'game_id = :g', ['g' => $gameId]);
 
@@ -86,11 +87,15 @@ require_once __DIR__ . '/../includes/admin_header.php';
           <h6 class="fw-bold">Readiness Check</h6>
           <p class="mb-1">
             Capacity Drivers total:
-            <span class="<?php echo abs($capacityTotal - 100) < 0.01 ? 'effect-positive' : 'effect-negative'; ?>"><?php echo number_format($capacityTotal, 2); ?>%</span>
+            <span><?php echo number_format($capacityTotal, 2); ?>%</span>
           </p>
           <p class="mb-1">
             Demand Drivers total:
-            <span class="<?php echo abs($demandTotal - 100) < 0.01 ? 'effect-positive' : 'effect-negative'; ?>"><?php echo number_format($demandTotal, 2); ?>%</span>
+            <span><?php echo number_format($demandTotal, 2); ?>%</span>
+          </p>
+          <p class="mb-1 fw-bold">
+            Combined Driver total:
+            <span class="<?php echo abs($combinedTotal - 100.00) < 0.01 ? 'effect-positive' : 'effect-negative'; ?>"><?php echo number_format($combinedTotal, 2); ?>% (must be 100%)</span>
           </p>
           <p class="mb-0">Investments configured: <strong><?php echo count($investments); ?></strong></p>
         </div>

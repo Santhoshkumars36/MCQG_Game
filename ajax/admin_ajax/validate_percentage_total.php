@@ -19,16 +19,15 @@ if (!$gameId) {
     Response::error('game_id is required.');
 }
 
-if ($driverType === 'demand') {
-    $total = DemandDriver::totalDemandSharePercent($gameId);
-    $balanced = DemandDriver::isBalanced($gameId);
-} else {
-    $total = CapacityDriver::totalCostSharePercent($gameId);
-    $balanced = CapacityDriver::isBalanced($gameId);
-}
+$capTotal = CapacityDriver::totalCostSharePercent($gameId);
+$demandTotal = DemandDriver::totalDemandSharePercent($gameId);
+$combinedTotal = round($capTotal + $demandTotal, 2);
+$balanced = abs($combinedTotal - 100.00) < 0.01;
 
 Response::success('Total calculated.', [
-    'total' => round($total, 2),
+    'capacity_total' => round($capTotal, 2),
+    'demand_total' => round($demandTotal, 2),
+    'combined_total' => $combinedTotal,
     'balanced' => $balanced,
-    'difference' => round(PERCENT_TOTAL_REQUIRED - $total, 2),
+    'difference' => round(100.00 - $combinedTotal, 2),
 ]);

@@ -65,11 +65,21 @@ class Game
         return (int)$id;
     }
 
+    public static function ensureSchemaUpdated(): void
+    {
+        try {
+            Database::getInstance()->execute("ALTER TABLE game_master ADD COLUMN sales_price DECIMAL(18,2) NOT NULL DEFAULT 0.00");
+        } catch (\Throwable $e) {
+            // Ignore if column already exists
+        }
+    }
+
     /** Admin Wizard Step 2: Game Definition core configuration. */
     public static function updateDefinition(int $gameId, array $data): void
     {
-        Database::getInstance()->execute(
-            'UPDATE game_master SET
+        self::ensureSchemaUpdated();
+
+        $sql = 'UPDATE game_master SET
                 demand = :demand,
                 starting_cash = :starting_cash,
                 starting_capacity = :starting_capacity,
@@ -79,32 +89,49 @@ class Game
                 capacity_increment = :capacity_increment,
                 no_of_years = :no_of_years,
                 unit_of_measure = :unit_of_measure,
-                currency = :currency
-             WHERE game_id = :game_id',
-            [
-                ':demand'             => $data['demand'],
-                ':starting_cash'      => $data['starting_cash'] ?? 0,
-                ':starting_capacity'  => $data['starting_capacity'] ?? 0,
-                ':capacity_cost'      => $data['capacity_cost'],
-                ':minimum_capacity'   => $data['minimum_capacity'],
-                ':maximum_capacity'   => $data['maximum_capacity'],
-                ':capacity_increment' => $data['capacity_increment'],
-                ':no_of_years'        => $data['no_of_years'],
-                ':unit_of_measure'    => $data['unit_of_measure'] ?? 'Numbers',
-                ':currency'           => $data['currency'],
-                ':game_id'            => $gameId,
-            ]
-        );
+                currency = :currency';
+        
+        $params = [
+            ':demand'             => $data['demand'],
+            ':starting_cash'      => $data['starting_cash'] ?? 0,
+            ':starting_capacity'  => $data['starting_capacity'] ?? 0,
+            ':capacity_cost'      => $data['capacity_cost'],
+            ':minimum_capacity'   => $data['minimum_capacity'],
+            ':maximum_capacity'   => $data['maximum_capacity'],
+            ':capacity_increment' => $data['capacity_increment'],
+            ':no_of_years'        => $data['no_of_years'],
+            ':unit_of_measure'    => $data['unit_of_measure'] ?? 'Numbers',
+            ':currency'           => $data['currency'],
+            ':game_id'            => $gameId,
+        ];
+
+        if (isset($data['sales_price'])) {
+            $sql .= ', sales_price = :sales_price';
+            $params[':sales_price'] = (float) $data['sales_price'];
+        }
+        if (isset($data['sales_price_tolerance_percent'])) {
+            $sql .= ', sales_price_tolerance_percent = :sales_price_tolerance_percent';
+            $params[':sales_price_tolerance_percent'] = (float) $data['sales_price_tolerance_percent'];
+        }
+
+        $sql .= ' WHERE game_id = :game_id';
+        Database::getInstance()->execute($sql, $params);
         Logger::activity("Game #$gameId definition updated.");
     }
 
-    /** Admin Wizard Step 6: sales price tolerance %. */
-    public static function updateSalesPriceTolerance(int $gameId, float $tolerancePercent): void
+    /** Admin Wizard Step 6: sales price & tolerance %. */
+    public static function updateSalesPriceTolerance(int $gameId, float $tolerancePercent, ?float $salesPrice = null): void
     {
-        Database::getInstance()->execute(
-            'UPDATE game_master SET sales_price_tolerance_percent = :t WHERE game_id = :id',
-            [':t' => $tolerancePercent, ':id' => $gameId]
-        );
+        self::ensureSchemaUpdated();
+
+        $sql = 'UPDATE game_master SET sales_price_tolerance_percent = :t';
+        $params = [':t' => $tolerancePercent, ':id' => $gameId];
+        if ($salesPrice !== null) {
+            $sql .= ', sales_price = :sp';
+            $params[':sp'] = $salesPrice;
+        }
+        $sql .= ' WHERE game_id = :id';
+        Database::getInstance()->execute($sql, $params);
     }
 
     /**
@@ -120,14 +147,12 @@ class Game
             return [false, 'Game not found.'];
         }
 
-        $capTotal = CapacityDriver::getTotalCostSharePercent($gameId);
-        if (!Validator::percentageTotalsEqual100([$capTotal])) {
-            return [false, "Capacity Driver totals must equal 100% (currently {$capTotal}%)."];
-        }
+        $capTotal = CapacityDriver::totalCostSharePercent($gameId);
+        $demandTotal = DemandDriver::totalDemandSharePercent($gameId);
+        $combinedTotal = round($capTotal + $demandTotal, 2);
 
-        $demandTotal = DemandDriver::getTotalDemandSharePercent($gameId);
-        if (!Validator::percentageTotalsEqual100([$demandTotal])) {
-            return [false, "Demand Driver totals must equal 100% (currently {$demandTotal}%)."];
+        if (!Validator::percentageTotalsEqual100([$combinedTotal])) {
+            return [false, "Capacity Drivers ({$capTotal}%) + Demand Drivers ({$demandTotal}%) = {$combinedTotal}% — combined total must equal exactly 100%."];
         }
 
         $yearsConfigured = count(self::getMarketYears($gameId));

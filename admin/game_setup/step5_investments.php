@@ -30,29 +30,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_investment'])) {
             'min_investment_value'  => (float) ($_POST['min_investment_value'] ?? 0),
             'max_investment_value'  => (float) ($_POST['max_investment_value'] ?? 0),
             'increment_value'       => (float) ($_POST['increment_value'] ?? 1),
-            'effective_from'        => $_POST['effective_from'] ?? EFFECTIVE_IMMEDIATE,
+            'effective_from'        => 'Immediate',
             'repeat_allowed'        => isset($_POST['repeat_allowed']) ? 1 : 0,
-            'purchase_limit'        => (int) ($_POST['purchase_limit'] ?? 1),
+            'purchase_limit'        => 1,
             'display_order'         => count($investments) + 1,
             'active'                => 1,
         ]);
 
         $driverTypes = $_POST['driver_type'] ?? [];
         $driverIds = $_POST['driver_id'] ?? [];
-        $minPercents = $_POST['min_percent'] ?? [];
-        $maxPercents = $_POST['max_percent'] ?? [];
-        $incPercents = $_POST['increment_percent'] ?? [];
+        $effectDirections = $_POST['effect_direction'] ?? [];
 
         foreach ($driverTypes as $i => $type) {
             if (!Validator::required($driverIds[$i] ?? '')) continue;
-            $injectMessage = "{$name} " . (($maxPercents[$i] ?? 0) >= 0 ? 'improves' : 'reduces') . " the linked {$type} driver.";
+            $dir = ($effectDirections[$i] ?? 'Negative') === 'Positive' ? 'Positive' : 'Negative';
+            $val = ($dir === 'Positive') ? 1.0 : -1.0;
+            $injectMessage = "{$name} " . ($dir === 'Positive' ? 'increases' : 'reduces') . " the linked {$type} driver.";
             $db->insert('investment_effect', [
                 'investment_id'    => $investmentId,
                 'driver_type'      => $type,
                 'driver_id'        => (int) $driverIds[$i],
-                'min_percent'      => (float) ($minPercents[$i] ?? 0),
-                'max_percent'      => (float) ($maxPercents[$i] ?? 0),
-                'increment_percent'=> (float) ($incPercents[$i] ?? 0),
+                'min_percent'      => $val,
+                'max_percent'      => $val,
+                'increment_percent'=> 0,
                 'inject_message'   => $injectMessage,
             ]);
         }
@@ -99,7 +99,7 @@ require_once __DIR__ . '/../includes/admin_header.php';
 
     <!-- Existing investments -->
     <table class="table table-sm mb-4">
-      <thead><tr><th>Investment</th><th>Min</th><th>Max</th><th>Increment</th><th>Effective From</th></tr></thead>
+      <thead><tr><th>Investment</th><th>Min</th><th>Max</th><th>Increment</th></tr></thead>
       <tbody>
       <?php foreach ($investments as $inv): ?>
         <tr>
@@ -107,11 +107,10 @@ require_once __DIR__ . '/../includes/admin_header.php';
           <td><?php echo number_format($inv['min_investment_value'], 0); ?></td>
           <td><?php echo number_format($inv['max_investment_value'], 0); ?></td>
           <td><?php echo number_format($inv['increment_value'], 0); ?></td>
-          <td><?php echo htmlspecialchars($inv['effective_from']); ?></td>
         </tr>
       <?php endforeach; ?>
       <?php if (!count($investments)): ?>
-        <tr><td colspan="5" class="text-muted text-center py-3">No investments added yet.</td></tr>
+        <tr><td colspan="4" class="text-muted text-center py-3">No investments added yet.</td></tr>
       <?php endif; ?>
       </tbody>
     </table>
@@ -126,16 +125,9 @@ require_once __DIR__ . '/../includes/admin_header.php';
           <div class="col-md-8"><input type="text" name="description" class="form-control" placeholder="Description"></div>
         </div>
         <div class="row g-2 mb-2">
-          <div class="col-md-3"><input type="number" step="0.01" name="min_investment_value" class="form-control" placeholder="Min Value" required></div>
-          <div class="col-md-3"><input type="number" step="0.01" name="max_investment_value" class="form-control" placeholder="Max Value" required></div>
-          <div class="col-md-2"><input type="number" step="0.01" name="increment_value" class="form-control" placeholder="Increment" required></div>
-          <div class="col-md-2">
-            <select name="effective_from" class="form-select">
-              <option value="Immediate">Immediate</option>
-              <option value="Next Year">Next Year</option>
-            </select>
-          </div>
-          <div class="col-md-2"><input type="number" name="purchase_limit" class="form-control" placeholder="Purchase Limit" value="1"></div>
+          <div class="col-md-4"><input type="number" step="0.01" name="min_investment_value" class="form-control" placeholder="Min Value" required></div>
+          <div class="col-md-4"><input type="number" step="0.01" name="max_investment_value" class="form-control" placeholder="Max Value" required></div>
+          <div class="col-md-4"><input type="number" step="0.01" name="increment_value" class="form-control" placeholder="Increment" required></div>
         </div>
         <div class="form-check mb-3">
           <input type="checkbox" class="form-check-input" name="repeat_allowed" id="repeat_allowed">
@@ -145,13 +137,13 @@ require_once __DIR__ . '/../includes/admin_header.php';
         <h6>Driver Mapping (effect on Capacity/Demand Drivers)</h6>
         <div id="mcqg-mapping-rows">
           <div class="row g-2 mb-2 mcqg-mapping-row align-items-center">
-            <div class="col-3">
+            <div class="col-md-4">
               <select class="form-select" name="driver_type[]">
                 <option value="Capacity">Capacity Driver</option>
                 <option value="Demand">Demand Driver</option>
               </select>
             </div>
-            <div class="col-3">
+            <div class="col-md-4">
               <select class="form-select" name="driver_id[]">
                 <optgroup label="Capacity Drivers">
                   <?php foreach ($capacityDrivers as $cd): ?>
@@ -165,10 +157,15 @@ require_once __DIR__ . '/../includes/admin_header.php';
                 </optgroup>
               </select>
             </div>
-            <div class="col-2"><input type="number" step="0.1" class="form-control effect-percent-input" name="min_percent[]" placeholder="Min %"></div>
-            <div class="col-2"><input type="number" step="0.1" class="form-control effect-percent-input" name="max_percent[]" placeholder="Max %"></div>
-            <div class="col-1"><input type="number" step="0.1" class="form-control" name="increment_percent[]" placeholder="Incr %"></div>
-            <div class="col-1"><button type="button" class="btn btn-sm btn-outline-danger mcqg-remove-row">&times;</button></div>
+            <div class="col-md-3">
+              <select class="form-select" name="effect_direction[]">
+                <option value="Negative">Negative (-) Reduces driver share</option>
+                <option value="Positive">Positive (+) Increases driver share</option>
+              </select>
+            </div>
+            <div class="col-md-1 text-center">
+              <button type="button" class="btn btn-sm btn-outline-danger mcqg-remove-row">&times;</button>
+            </div>
           </div>
         </div>
         <button type="button" id="mcqg-add-mapping-btn" class="btn btn-mcqg-outline btn-sm mb-2">+ Add Mapping</button>

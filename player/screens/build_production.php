@@ -24,10 +24,15 @@ if (!$team || !$game) {
 }
 
 $currentRound = $db->fetchOne(
-    "SELECT * FROM game_round_status WHERE game_id = :g AND status != 'Processed' ORDER BY year_no LIMIT 1",
+    "SELECT * FROM game_round_status WHERE game_id = :g AND (status = 'Live' OR status = 'Open') ORDER BY year_no LIMIT 1",
     ['g' => $gameId]
 );
-$yearNo = $currentRound['year_no'] ?? 1;
+
+if (!$currentRound) {
+    header('Location: case_study.php?msg=not_launched');
+    exit;
+}
+$yearNo = $currentRound['year_no'];
 
 $decision = $db->fetchOne(
     "SELECT * FROM team_decision WHERE team_id = :t AND year_no = :y",

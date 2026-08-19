@@ -40,16 +40,22 @@ class CapacityDriver
         return Database::getInstance()->delete('capacity_driver', 'driver_id = :d', ['d' => $driverId]);
     }
 
-    /** MG19 Slide 5: Cost share % across all drivers for a game must total exactly 100% */
+    /** MG19 Slide 8: Capacity driver cost share total */
     public static function totalCostSharePercent(int $gameId): float
     {
         $rows = self::forGame($gameId);
         return array_sum(array_map('floatval', array_column($rows, 'cost_share_percent')));
     }
 
+    public static function getTotalCostSharePercent(int $gameId): float
+    {
+        return self::totalCostSharePercent($gameId);
+    }
+
     public static function isBalanced(int $gameId): bool
     {
-        return abs(self::totalCostSharePercent($gameId) - PERCENT_TOTAL_REQUIRED) < 0.01;
+        $total = self::totalCostSharePercent($gameId);
+        return $total > 0 && $total <= 100.00;
     }
 
     /** Recomputes and saves cost_value = capacity_cost x cost_share_percent for every driver in a game */

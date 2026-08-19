@@ -66,8 +66,8 @@ define('ROLE_TEAM', 'team');
 // these without updating the source ARD documents first)
 // ---------------------------------------------------------------------
 
-// Doc 3 (MG19), Slide 5 & 7: Capacity Driver "Cost share %" and
-// Demand Driver "Demand share %" must each total exactly this value.
+// Doc 3 (MG19), Slide 8: Combined total of Capacity Driver "Cost share %" and
+// Demand Driver "Demand share %" must total exactly this value (100%).
 define('DRIVER_SHARE_TOTAL_REQUIRED', 100.00);
 
 // Driver type identifiers (match investment_effect.driver_type ENUM values)

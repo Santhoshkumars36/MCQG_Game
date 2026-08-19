@@ -24,14 +24,14 @@ INSERT INTO game_master
 (game_id, game_name, description, no_of_years, product_name, unit_of_measure, currency,
  starting_cash, starting_capacity, starting_inventory, starting_plant_value,
  capacity_cost, minimum_capacity, maximum_capacity, capacity_increment,
- demand, sales_price_tolerance_percent, status, created_by)
+ demand, sales_price_tolerance_percent, sales_price, status, created_by)
 VALUES
 (1, 'Smart Water Purifier Challenge',
  'Three companies - Falcon, Titan and Nova - compete to manufacture and sell Smart Water Purifiers in a shared market over 3 rounds.',
  3, 'Smart Water Purifier', 'Units', 'INR',
  5000000.00, 6000, 600, 12000000.00,
  60000000.00, 4000, 10000, 100,
- 18000, 5.00, 'Published', 1);
+ 18000, 5.00, 12000.00, 'Published', 1);
 
 -- ---------------------------------------------------------------------
 -- 3. Annual Market Setup - demand & inflation per round
@@ -42,22 +42,22 @@ INSERT INTO game_market_year (game_id, year_no, market_demand, inflation_percent
 (1, 3, 22000, 5.00, 'Demand continues to grow; competition intensifies.');
 
 -- ---------------------------------------------------------------------
--- 4. Capacity Drivers (must total 100% cost share)
+-- 4. Capacity Drivers (78.00% combined with Demand Drivers)
 -- ---------------------------------------------------------------------
 INSERT INTO capacity_driver (game_id, group_name, driver_name, cost_share_percent) VALUES
-(1, 'Production', 'Labour Cost', 40.00),
-(1, 'Production', 'Material Cost', 35.00),
-(1, 'Quality', 'Cost of Errors', 15.00),
-(1, 'Maintenance', 'Preventive Maintenance Cost', 10.00);
+(1, 'Production', 'Labour Cost', 30.00),
+(1, 'Production', 'Material Cost', 30.00),
+(1, 'Quality', 'Cost of Errors', 10.00),
+(1, 'Maintenance', 'Preventive Maintenance Cost', 8.00);
 
 -- ---------------------------------------------------------------------
--- 5. Demand Drivers (must total 100% demand share)
+-- 5. Demand Drivers (22.00% combined with Capacity Drivers = 100%)
 -- ---------------------------------------------------------------------
 INSERT INTO demand_driver (game_id, group_name, driver_name, demand_share_percent) VALUES
-(1, 'Marketing', 'Advertising Reach', 30.00),
-(1, 'Trust', 'Brand Reputation', 25.00),
-(1, 'Availability', 'Warehouse Efficiency', 25.00),
-(1, 'Insight', 'Demand Analytics', 20.00);
+(1, 'Marketing', 'Advertising Reach', 6.00),
+(1, 'Trust', 'Brand Reputation', 6.00),
+(1, 'Availability', 'Warehouse Efficiency', 5.00),
+(1, 'Insight', 'Demand Analytics', 5.00);
 
 -- ---------------------------------------------------------------------
 -- 6. Investment Catalogue
