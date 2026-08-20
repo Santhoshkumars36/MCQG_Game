@@ -2,8 +2,7 @@
 /**
  * MCQG Player - Screen 1: Case Study
  * Path: player/screens/case_study.php
- * Source: MG19 Slide 9 - screen split 2/3 case study (rich text) /
- * 1/3 opening inventory, opening budget, number of periods.
+ * Source: Slide 2 - Entire screen case study with rich text and small image.
  */
 require_once __DIR__ . '/../../config/app_config.php';
 Auth::requireTeam();
@@ -21,84 +20,52 @@ if (!$team || !$game) {
     exit;
 }
 
-$currentRound = $db->fetchOne(
-    "SELECT * FROM game_round_status WHERE game_id = :g AND status != 'Processed' ORDER BY year_no LIMIT 1",
-    ['g' => $gameId]
-);
-$yearNo = $currentRound['year_no'] ?? (int) $game['no_of_years'];
+$pageTitle = 'Case Study: ' . $game['game_name'];
+$activeStep = 1;
 
-// Team's running cash position, if any prior rounds were processed
-$lastResult = $db->fetchOne(
-    "SELECT cash_position FROM team_result WHERE team_id = :t ORDER BY year_no DESC LIMIT 1",
-    ['t' => $teamId]
-);
-$currentBudget = $lastResult ? (float) $lastResult['cash_position'] : (float) $team['opening_budget'];
-
-$lastInventory = $db->fetchOne(
-    "SELECT closing_inventory FROM team_result WHERE team_id = :t ORDER BY year_no DESC LIMIT 1",
-    ['t' => $teamId]
-);
-$currentInventory = $lastInventory ? (int) $lastInventory['closing_inventory'] : (int) $team['opening_inventory'];
-
-$pageTitle = 'Case Study';
-require_once __DIR__ . '/../includes/player_header.php';
+require_once __DIR__ . '/../includes/command_header.php';
 ?>
-<div class="mcqg-main">
-<?php require_once __DIR__ . '/../includes/player_sidebar.php'; ?>
 
-<div class="mcqg-round-banner">
-  <div>
-    <h3>Year <?php echo (int) $yearNo; ?> of <?php echo (int) $game['no_of_years']; ?></h3>
-    <p>Read the scenario, then move on to build your production plan.</p>
-  </div>
-  <span class="mcqg-badge mcqg-badge-open">Round Open</span>
-</div>
-
-<?php 
-$isLiveRound = $currentRound && ($currentRound['status'] === 'Live' || $currentRound['status'] === 'Open');
-if (!$isLiveRound || isset($_GET['msg']) && $_GET['msg'] === 'not_launched'):
-?>
-<div class="alert alert-warning border-warning shadow-sm mb-4 fw-semibold" style="border-left:5px solid #f59e0b;">
-  🔒 Round <?php echo (int)$yearNo; ?> has not been launched yet by the Moderator. You can read the Case Study scenario below while waiting for the trainer to click LAUNCH.
-</div>
-<?php endif; ?>
-
-<div class="row g-4">
-  <div class="col-lg-8">
-    <div class="mcqg-card">
-      <div class="mcqg-card-header d-flex align-items-center gap-3">
+<div class="cmd-container">
+  <div class="cmd-full-grid">
+    <div class="cmd-card">
+      <div class="cmd-card-header">
+        <h1 class="cmd-card-title" style="font-size:20px;">
+          <i class="fa-solid fa-book-open text-primary me-2"></i>
+          Case Study: <?php echo htmlspecialchars($game['game_name']); ?>
+        </h1>
+        <span class="badge bg-primary px-3 py-2" style="font-size:12px;">Strategic Briefing</span>
+      </div>
+      <div class="cmd-card-body">
+        
         <?php if ($csImg = Game::getImageUrl($game)): ?>
-          <img src="<?php echo $csImg; ?>" alt="Game Thumbnail" class="rounded border shadow-sm" style="width: 48px; height: 48px; object-fit: cover;">
+          <div class="text-center mb-4 p-3 bg-light rounded-3 border">
+            <img src="<?php echo htmlspecialchars($csImg); ?>" alt="Case Study Scenario" class="img-fluid rounded shadow-sm" style="max-height: 280px; object-fit: contain;">
+          </div>
         <?php endif; ?>
-        <h2 class="m-0"><?php echo htmlspecialchars($game['game_name']); ?></h2>
-      </div>
-      <div style="line-height:1.7;" class="mt-3"><?php echo $game['description']; ?></div>
-    </div>
-  </div>
 
-  <div class="col-lg-4">
-    <div class="mcqg-card">
-      <div class="mcqg-card-header"><h3>Your Position</h3></div>
-      <div class="mcqg-live-stat" style="border-bottom-color:var(--mcqg-border); color:var(--mcqg-text);">
-        <span class="label" style="color:var(--mcqg-text-muted);">Opening Inventory</span>
-        <span class="value" style="color:var(--mcqg-navy);"><?php echo number_format($currentInventory); ?> units</span>
-      </div>
-      <div class="mcqg-live-stat" style="border-bottom-color:var(--mcqg-border); color:var(--mcqg-text);">
-        <span class="label" style="color:var(--mcqg-text-muted);">Opening Budget</span>
-        <span class="value" style="color:var(--mcqg-navy);">&#8377;<?php echo number_format($currentBudget, 2); ?></span>
-      </div>
-      <div class="mcqg-live-stat" style="color:var(--mcqg-text);">
-        <span class="label" style="color:var(--mcqg-text-muted);">Periods Remaining</span>
-        <span class="value" style="color:var(--mcqg-navy);"><?php echo (int) $game['no_of_years'] - $yearNo + 1; ?></span>
-      </div>
+        <div class="case-study-content style-rich-text" style="font-size: 15px; line-height: 1.8; color: #334155;">
+          <?php if (!empty($game['description'])): ?>
+            <?php echo $game['description']; ?>
+          <?php else: ?>
+            <p>Welcome to <strong><?php echo htmlspecialchars($game['game_name']); ?></strong>. In this strategic management simulation, your executive leadership team is tasked with driving operational excellence, balancing capacity expansions, optimizing unit cost structures, and capturing target market share across multiple periods.</p>
+            <p>Review the briefing parameters, opening inventory position, and market parameters before formulating your decisions for Year <?php echo (int) $yearNo; ?>.</p>
+          <?php endif; ?>
+        </div>
 
-      <?php if ($isLiveRound): ?>
-        <a href="build_production.php" class="btn btn-mcqg-gold w-100 mt-3">Start Building Production &rarr;</a>
-      <?php else: ?>
-        <button class="btn btn-secondary w-100 mt-3" disabled style="opacity:0.75;">🔒 Waiting for Moderator Launch</button>
-      <?php endif; ?>
+      </div>
     </div>
   </div>
 </div>
 
-<?php require_once __DIR__ . '/../includes/player_footer.php'; ?>
+<!-- Bottom Navigation Bar -->
+<div class="cmd-bottom-bar">
+  <a href="<?php echo PLAYER_URL; ?>landing.php" class="cmd-btn-secondary">
+    <i class="fa-solid fa-house"></i> Home Dashboard
+  </a>
+  <a href="<?php echo PLAYER_URL; ?>screens/opening_statistics.php" class="cmd-btn-primary">
+    Opening Statistics <i class="fa-solid fa-arrow-right"></i>
+  </a>
+</div>
+
+<?php require_once __DIR__ . '/../includes/command_footer.php'; ?>

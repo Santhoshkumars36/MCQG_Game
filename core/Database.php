@@ -72,6 +72,12 @@ class Database
         return $value === false ? null : $value;
     }
 
+    /** Alias for fetchValue() */
+    public function fetchColumn(string $sql, array $params = [])
+    {
+        return $this->fetchValue($sql, $params);
+    }
+
     /**
      * ORM-style INSERT: pass table name + associative data array.
      * e.g. $db->insert('game_master', ['game_name' => 'Test', 'status' => 'Draft'])

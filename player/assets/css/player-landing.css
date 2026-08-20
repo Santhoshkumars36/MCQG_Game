@@ -1,0 +1,728 @@
+/* =========================================================
+   MCQG Player - Team Landing Page Stylesheet
+   Path: player/assets/css/player-landing.css
+   Design: Matches reference spec — case study card left,
+           executive summary right, round cards in bottom row.
+   ========================================================= */
+
+/* ── Google Font ── */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+/* ── Root Overrides for Landing ── */
+:root {
+  --land-navy:       #1a2e5e;
+  --land-navy-dk:    #0f1d3c;
+  --land-blue-mid:   #2456b4;
+  --land-accent:     #1a7fc1;
+  --land-gold:       #c99a2e;
+  --land-gold-lt:    #e7c766;
+  --land-green:      #1a9d55;
+  --land-green-bg:   #e8f8ef;
+  --land-orange:     #e07b2e;
+  --land-orange-bg:  #fff3e5;
+  --land-grey:       #8a93a6;
+  --land-grey-bg:    #f2f4f8;
+  --land-border:     #dde2ee;
+  --land-bg:         #f0f3fa;
+  --land-white:      #ffffff;
+  --land-text:       #1a2035;
+  --land-text-muted: #5e697d;
+  --land-radius:     12px;
+  --land-radius-sm:  8px;
+  --land-shadow:     0 4px 24px rgba(26, 46, 94, 0.10);
+  --land-shadow-lg:  0 8px 40px rgba(26, 46, 94, 0.15);
+  --land-trans:      all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ── Full-page override: no sidebar on this page ── */
+.landing-shell {
+  font-family: 'Inter', 'Segoe UI', Roboto, sans-serif;
+  background: var(--land-bg);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ══════════════════════════════════════════════
+   TOP HEADER BAR
+   ══════════════════════════════════════════════ */
+.land-header {
+  background: var(--land-white);
+  border-bottom: 1.5px solid var(--land-border);
+  padding: 0 40px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 12px rgba(26, 46, 94, 0.07);
+}
+
+.land-header-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.land-header-logo {
+  width: 36px;
+  height: 36px;
+  background: var(--land-navy);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: -0.5px;
+}
+
+.land-header-team-name {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--land-navy);
+  letter-spacing: -0.3px;
+}
+
+.land-header-game-label {
+  font-size: 12px;
+  color: var(--land-text-muted);
+  font-weight: 500;
+  margin-left: 4px;
+}
+
+.land-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.land-logout-btn {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 18px;
+  border: 1.5px solid var(--land-border);
+  border-radius: var(--land-radius-sm);
+  background: var(--land-white);
+  color: var(--land-text-muted);
+  font-size: 13.5px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: var(--land-trans);
+  cursor: pointer;
+}
+.land-logout-btn:hover {
+  border-color: var(--land-navy);
+  color: var(--land-navy);
+  background: var(--land-grey-bg);
+}
+.land-logout-btn i { font-size: 13px; }
+
+/* ══════════════════════════════════════════════
+   MAIN CONTENT AREA
+   ══════════════════════════════════════════════ */
+.land-content {
+  flex: 1;
+  padding: 32px 40px 48px;
+  max-width: 1280px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+/* ══════════════════════════════════════════════
+   CASE STUDY / CORE BRIEFING CARD
+   ══════════════════════════════════════════════ */
+.land-briefing-card {
+  background: var(--land-white);
+  border-radius: var(--land-radius);
+  box-shadow: var(--land-shadow);
+  border: 1px solid var(--land-border);
+  display: flex;
+  overflow: hidden;
+  margin-bottom: 28px;
+  min-height: 280px;
+}
+
+/* Left: Image with overlay */
+.land-briefing-img-wrap {
+  position: relative;
+  width: 320px;
+  min-width: 260px;
+  flex-shrink: 0;
+  background: var(--land-navy-dk);
+  overflow: hidden;
+}
+
+.land-briefing-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.85;
+  display: block;
+}
+
+.land-briefing-img-placeholder {
+  width: 100%;
+  height: 100%;
+  min-height: 280px;
+  background: linear-gradient(160deg, var(--land-navy) 0%, var(--land-navy-dk) 50%, #0a1628 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.land-briefing-img-placeholder::before {
+  content: '';
+  position: absolute;
+  width: 250px;
+  height: 250px;
+  background: radial-gradient(circle, rgba(255,255,255,0.06) 0%, transparent 70%);
+  top: -30px;
+  right: -30px;
+  border-radius: 50%;
+}
+
+.land-briefing-img-placeholder::after {
+  content: '';
+  position: absolute;
+  width: 180px;
+  height: 180px;
+  background: radial-gradient(circle, rgba(201,154,46,0.12) 0%, transparent 70%);
+  bottom: -20px;
+  left: -20px;
+  border-radius: 50%;
+}
+
+.land-briefing-img-icon {
+  font-size: 64px;
+  opacity: 0.4;
+  z-index: 1;
+  position: relative;
+}
+
+.land-briefing-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 20px 20px 16px;
+  background: linear-gradient(0deg, rgba(10,22,40,0.96) 0%, transparent 100%);
+}
+
+.land-core-tag {
+  display: inline-block;
+  background: var(--land-gold);
+  color: var(--land-navy-dk);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  padding: 3px 10px;
+  border-radius: 4px;
+  margin-bottom: 8px;
+}
+
+.land-briefing-title {
+  color: #fff;
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 1.35;
+  margin: 0;
+}
+
+/* Right: Executive Summary + Objectives */
+.land-briefing-body {
+  flex: 1;
+  padding: 28px 32px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.land-briefing-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.land-exec-title {
+  font-size: 19px;
+  font-weight: 700;
+  color: var(--land-navy);
+  margin: 0 0 10px;
+}
+
+.land-exec-summary {
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--land-text-muted);
+  margin: 0;
+  max-width: 520px;
+}
+
+.land-briefing-actions {
+  display: flex;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.land-btn-open {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 18px;
+  border: 1.5px solid var(--land-border);
+  border-radius: var(--land-radius-sm);
+  background: var(--land-white);
+  color: var(--land-text);
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: var(--land-trans);
+  white-space: nowrap;
+}
+.land-btn-open:hover {
+  border-color: var(--land-blue-mid);
+  color: var(--land-blue-mid);
+  background: #f0f5ff;
+}
+
+.land-btn-pdf {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 18px;
+  border: none;
+  border-radius: var(--land-radius-sm);
+  background: var(--land-navy);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: var(--land-trans);
+  white-space: nowrap;
+}
+.land-btn-pdf:hover {
+  background: var(--land-navy-dk);
+  color: #fff;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(26,46,94,0.25);
+}
+
+/* Key Objectives Section */
+.land-objectives-wrap {
+  border-top: 1px solid var(--land-border);
+  padding-top: 18px;
+  margin-top: 4px;
+}
+
+.land-objectives-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--land-accent);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+}
+
+.land-objectives-header i { font-size: 13px; }
+
+.land-objectives-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px 28px;
+}
+
+.land-objective-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--land-text);
+  line-height: 1.5;
+}
+
+.land-objective-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--land-blue-mid);
+  flex-shrink: 0;
+  margin-top: 6px;
+}
+
+/* ══════════════════════════════════════════════
+   ROUNDS SECTION HEADING
+   ══════════════════════════════════════════════ */
+.land-rounds-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.land-rounds-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--land-text);
+  margin: 0;
+}
+
+.land-rounds-subtitle {
+  font-size: 13px;
+  color: var(--land-text-muted);
+}
+
+/* ══════════════════════════════════════════════
+   ROUNDS SCROLL ROW
+   ══════════════════════════════════════════════ */
+.land-rounds-row {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+}
+
+.land-rounds-row::-webkit-scrollbar { height: 5px; }
+.land-rounds-row::-webkit-scrollbar-track { background: var(--land-border); border-radius: 10px; }
+.land-rounds-row::-webkit-scrollbar-thumb { background: var(--land-grey); border-radius: 10px; }
+
+/* ══════════════════════════════════════════════
+   INDIVIDUAL ROUND CARD
+   ══════════════════════════════════════════════ */
+.land-round-card {
+  background: var(--land-white);
+  border: 1.5px solid var(--land-border);
+  border-radius: var(--land-radius);
+  padding: 20px 22px 22px;
+  min-width: 200px;
+  max-width: 220px;
+  flex-shrink: 0;
+  scroll-snap-align: start;
+  position: relative;
+  transition: var(--land-trans);
+  display: flex;
+  flex-direction: column;
+}
+
+/* Completed */
+.land-round-card.state-completed {
+  border-color: var(--land-border);
+}
+.land-round-card.state-completed:hover {
+  box-shadow: var(--land-shadow);
+  transform: translateY(-3px);
+}
+
+/* Active / In Progress */
+.land-round-card.state-active {
+  border-color: var(--land-navy);
+  border-width: 2px;
+  box-shadow: 0 0 0 4px rgba(26,46,94,0.08), var(--land-shadow);
+}
+
+/* Active badge above card */
+.land-active-badge-wrap {
+  position: absolute;
+  top: -13px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.land-active-badge {
+  background: var(--land-navy);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  padding: 3px 12px;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+
+/* Locked */
+.land-round-card.state-locked {
+  border-color: var(--land-border);
+  background: #fafbfd;
+  opacity: 0.72;
+  cursor: not-allowed;
+}
+
+/* ── Card Header ── */
+.land-round-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.land-round-label {
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: var(--land-text-muted);
+  margin: 0 0 4px;
+}
+
+.land-round-name {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--land-navy);
+  margin: 0;
+  line-height: 1.2;
+}
+
+.state-locked .land-round-name {
+  color: var(--land-grey);
+}
+
+/* Status icon top-right */
+.land-round-icon {
+  font-size: 18px;
+  flex-shrink: 0;
+  margin-left: 8px;
+  margin-top: 2px;
+}
+
+.land-round-icon.icon-completed { color: var(--land-green); }
+.land-round-icon.icon-locked    { color: #c0c8d8; }
+
+/* ── Status Row ── */
+.land-round-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-bottom: 18px;
+}
+
+.land-round-meta-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12.5px;
+}
+
+.land-meta-label {
+  color: var(--land-text-muted);
+  font-weight: 500;
+}
+
+.land-meta-value {
+  font-weight: 700;
+  color: var(--land-text);
+}
+
+.land-meta-value.val-completed { color: var(--land-green); }
+.land-meta-value.val-inprogress { color: var(--land-blue-mid); }
+.land-meta-value.val-locked { color: var(--land-grey); }
+.land-meta-value.val-submitted { color: var(--land-orange); }
+
+/* ── Card Actions Area ── */
+.land-round-actions {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Completed buttons */
+.land-btn-results {
+  display: block;
+  text-align: center;
+  padding: 8px 12px;
+  border: 1.5px solid var(--land-border);
+  border-radius: var(--land-radius-sm);
+  color: var(--land-text);
+  font-size: 12.5px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: var(--land-trans);
+  background: var(--land-white);
+}
+.land-btn-results:hover {
+  border-color: var(--land-navy);
+  color: var(--land-navy);
+  background: var(--land-grey-bg);
+}
+
+/* Play button (active round) */
+.land-btn-play {
+  display: block;
+  text-align: center;
+  padding: 12px;
+  border: none;
+  border-radius: var(--land-radius-sm);
+  background: var(--land-navy);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: var(--land-trans);
+  letter-spacing: 0.3px;
+}
+.land-btn-play:hover {
+  background: var(--land-navy-dk);
+  color: #fff;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(26,46,94,0.28);
+}
+
+/* Locked placeholder buttons */
+.land-btn-locked {
+  display: block;
+  text-align: center;
+  padding: 8px 12px;
+  border: 1.5px solid var(--land-border);
+  border-radius: var(--land-radius-sm);
+  color: var(--land-grey);
+  font-size: 12.5px;
+  font-weight: 600;
+  background: #f2f4f8;
+  cursor: not-allowed;
+}
+
+/* ══════════════════════════════════════════════
+   FOOTER
+   ══════════════════════════════════════════════ */
+.land-footer {
+  background: var(--land-white);
+  border-top: 1px solid var(--land-border);
+  padding: 16px 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12.5px;
+  color: var(--land-text-muted);
+}
+
+.land-footer-links {
+  display: flex;
+  gap: 20px;
+}
+
+.land-footer-links a {
+  color: var(--land-text-muted);
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+.land-footer-links a:hover { color: var(--land-navy); }
+
+/* ══════════════════════════════════════════════
+   NO ROUNDS / WAITING STATES
+   ══════════════════════════════════════════════ */
+.land-no-rounds {
+  background: var(--land-white);
+  border: 1.5px dashed var(--land-border);
+  border-radius: var(--land-radius);
+  padding: 40px 32px;
+  text-align: center;
+  color: var(--land-text-muted);
+}
+.land-no-rounds i { font-size: 36px; margin-bottom: 12px; display: block; opacity: 0.5; }
+
+/* ══════════════════════════════════════════════
+   WAITING ALERT BANNER
+   ══════════════════════════════════════════════ */
+.land-waiting-alert {
+  background: linear-gradient(90deg, #fff8e1 0%, #fffde7 100%);
+  border: 1.5px solid #f5c842;
+  border-radius: var(--land-radius-sm);
+  padding: 12px 20px;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #744f00;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+.land-waiting-alert i { font-size: 16px; color: #e5a800; }
+
+/* ══════════════════════════════════════════════
+   QUICK STATS BAR (below briefing, above rounds)
+   ══════════════════════════════════════════════ */
+.land-stats-bar {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.land-stat-pill {
+  flex: 1;
+  background: var(--land-white);
+  border: 1px solid var(--land-border);
+  border-radius: var(--land-radius-sm);
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-shadow: 0 2px 8px rgba(26,46,94,0.05);
+  transition: var(--land-trans);
+}
+.land-stat-pill:hover { transform: translateY(-2px); box-shadow: var(--land-shadow); }
+
+.land-stat-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 17px;
+  flex-shrink: 0;
+}
+.land-stat-icon.ico-budget { background: #e8f0fe; color: var(--land-blue-mid); }
+.land-stat-icon.ico-inv    { background: #e8f8ef; color: var(--land-green); }
+.land-stat-icon.ico-profit { background: #f3e8ff; color: #7c3aed; }
+.land-stat-icon.ico-rounds { background: #fff3e5; color: var(--land-orange); }
+
+.land-stat-val {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--land-text);
+  white-space: nowrap;
+}
+.land-stat-lbl {
+  font-size: 11.5px;
+  color: var(--land-text-muted);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+/* ══════════════════════════════════════════════
+   RESPONSIVE
+   ══════════════════════════════════════════════ */
+@media (max-width: 900px) {
+  .land-content { padding: 20px 18px 36px; }
+  .land-header  { padding: 0 18px; }
+  .land-footer  { padding: 14px 18px; flex-direction: column; gap: 10px; text-align: center; }
+  .land-briefing-card { flex-direction: column; }
+  .land-briefing-img-wrap { width: 100%; min-height: 200px; }
+  .land-briefing-body { padding: 20px; }
+  .land-briefing-top { flex-direction: column; }
+  .land-objectives-grid { grid-template-columns: 1fr; }
+  .land-stats-bar { flex-wrap: wrap; }
+  .land-stat-pill { flex: 1 1 calc(50% - 8px); }
+  .land-rounds-row { flex-wrap: nowrap; }
+}
+
+@media (max-width: 600px) {
+  .land-header-game-label { display: none; }
+  .land-stat-pill { flex: 1 1 100%; }
+}

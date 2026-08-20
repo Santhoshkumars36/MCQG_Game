@@ -136,6 +136,10 @@ require_once __DIR__ . '/../includes/player_header.php';
       renderPlayerProfitChart();
     }
   </script>
+  <div class="d-flex justify-content-between align-items-center mt-3">
+    <a href="<?php echo PLAYER_URL; ?>landing.php" class="btn btn-mcqg-outline">&larr; Back to Home</a>
+    <a href="competitive_analysis.php" class="btn btn-mcqg-gold">View Competitive Team Analysis &rarr;</a>
+  </div>
 </div>
 
 <?php require_once __DIR__ . '/../includes/player_footer.php'; ?>

@@ -1,0 +1,708 @@
+/**
+ * MCQG Player - Executive Command Centre Design System (Ultra Premium Edition)
+ * Path: player/assets/css/player-command-centre.css
+ * Features: High-fidelity executive styling, gradient cards, range sliders, glassmorphism, and micro-animations.
+ */
+
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap');
+
+:root {
+  --cmd-navy: #0b132b;
+  --cmd-navy-surface: #1c2541;
+  --cmd-slate: #0f172a;
+  --cmd-slate-light: #1e293b;
+  
+  --cmd-blue-accent: #2563eb;
+  --cmd-blue-glow: rgba(37, 99, 235, 0.25);
+  --cmd-cyan: #06b6d4;
+
+  --cmd-gold: #d97706;
+  --cmd-gold-gradient: linear-gradient(135deg, #fbbf24 0%, #d97706 100%);
+  --cmd-gold-glow: rgba(245, 158, 11, 0.3);
+
+  --cmd-green: #10b981;
+  --cmd-green-bg: #ecfdf5;
+  --cmd-green-border: #a7f3d0;
+  
+  --cmd-red: #ef4444;
+  --cmd-red-bg: #fef2f2;
+  --cmd-red-border: #fecaca;
+
+  --cmd-bg: #f8fafc;
+  --cmd-card-bg: #ffffff;
+  --cmd-border: #e2e8f0;
+  --cmd-text-main: #0f172a;
+  --cmd-text-muted: #64748b;
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.06);
+  --shadow-md: 0 4px 14px rgba(15, 23, 42, 0.08);
+  --shadow-lg: 0 10px 25px -5px rgba(15, 23, 42, 0.12);
+}
+
+body {
+  background-color: var(--cmd-bg);
+  color: var(--cmd-text-main);
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Top Executive Navbar ── */
+.cmd-navbar {
+  background: linear-gradient(135deg, #0b132b 0%, #1c2541 100%);
+  color: #ffffff;
+  padding: 14px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 4px 20px rgba(11, 19, 43, 0.25);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.cmd-navbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.cmd-brand-icon {
+  background: var(--cmd-gold-gradient);
+  color: #0f172a;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 15px;
+  box-shadow: 0 0 12px var(--cmd-gold-glow);
+}
+
+.cmd-brand-title {
+  font-size: 19px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  color: #ffffff;
+}
+
+.cmd-round-badge {
+  background: rgba(251, 191, 36, 0.15);
+  border: 1px solid rgba(251, 191, 36, 0.3);
+  color: #fbbf24;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Stepper Progress in Header */
+.cmd-stepper {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 6px 18px;
+  border-radius: 30px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.cmd-step-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #94a3b8;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.25s ease;
+}
+
+.cmd-step-item:hover {
+  color: #cbd5e1;
+}
+
+.cmd-step-item.active {
+  color: #ffffff;
+  font-weight: 800;
+}
+
+.cmd-step-item.completed {
+  color: #34d399;
+}
+
+.cmd-step-num {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 2px solid #475569;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 800;
+  transition: all 0.25s ease;
+}
+
+.cmd-step-item.active .cmd-step-num {
+  background: var(--cmd-blue-accent);
+  color: #ffffff;
+  border-color: var(--cmd-blue-accent);
+  box-shadow: 0 0 10px var(--cmd-blue-glow);
+}
+
+.cmd-step-item.completed .cmd-step-num {
+  background: #10b981;
+  color: #ffffff;
+  border-color: #10b981;
+}
+
+.cmd-navbar-right {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.cmd-team-name {
+  color: #ffffff;
+  font-weight: 800;
+  font-size: 14px;
+}
+
+.cmd-logout-btn {
+  color: #f87171;
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  padding: 7px 16px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.cmd-logout-btn:hover {
+  background: rgba(239, 68, 68, 0.25);
+  color: #ffffff;
+}
+
+/* ── Container & Grid ── */
+.cmd-container {
+  max-width: 1440px;
+  margin: 28px auto;
+  padding: 0 28px;
+}
+
+.cmd-split-grid {
+  display: grid;
+  grid-template-columns: 7fr 3fr;
+  gap: 28px;
+  align-items: start;
+}
+
+.cmd-full-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 28px;
+}
+
+/* ── Section Cards (Left 70% Band) ── */
+.cmd-card {
+  background: var(--cmd-card-bg);
+  border: 1px solid var(--cmd-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  margin-bottom: 24px;
+  overflow: hidden;
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.cmd-card:hover {
+  box-shadow: var(--shadow-lg);
+}
+
+.cmd-card-header {
+  padding: 18px 24px;
+  background: #ffffff;
+  border-bottom: 1px solid var(--cmd-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.cmd-card-title {
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--cmd-navy);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.cmd-card-body {
+  padding: 24px;
+}
+
+/* ── Stepper + Slider Hybrid Controls ── */
+.cmd-stepper-control {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--cmd-border);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  background: #ffffff;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.cmd-stepper-btn {
+  background: #f1f5f9;
+  border: none;
+  color: var(--cmd-navy);
+  width: 40px;
+  height: 40px;
+  font-size: 18px;
+  font-weight: 800;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+  user-select: none;
+}
+
+.cmd-stepper-btn:hover {
+  background: var(--cmd-blue-accent);
+  color: #ffffff;
+}
+
+.cmd-stepper-input {
+  border: none;
+  width: 110px;
+  text-align: center;
+  font-weight: 800;
+  font-size: 15px;
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--cmd-navy);
+  padding: 4px 8px;
+  outline: none;
+}
+
+/* Dual Stepper-Slider Wrapper */
+.cmd-slider-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+}
+
+.cmd-range-slider {
+  flex: 1;
+  height: 6px;
+  -webkit-appearance: none;
+  appearance: none;
+  background: #e2e8f0;
+  border-radius: 4px;
+  outline: none;
+}
+
+.cmd-range-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--cmd-blue-accent);
+  border: 2px solid #ffffff;
+  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.4);
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+.cmd-range-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+}
+
+/* Dynamic Impact Badge */
+.cmd-impact-badge {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 8px 14px;
+  border-radius: 8px;
+  margin-top: 10px;
+  transition: all 0.25s ease;
+}
+
+.cmd-impact-badge.positive {
+  background: var(--cmd-green-bg);
+  color: #047857;
+  border: 1px solid var(--cmd-green-border);
+}
+
+.cmd-impact-badge.negative {
+  background: var(--cmd-red-bg);
+  color: #b91c1c;
+  border: 1px solid var(--cmd-red-border);
+}
+
+.cmd-impact-bar-track {
+  width: 120px;
+  height: 6px;
+  background: rgba(0, 0, 0, 0.08);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-left: 10px;
+}
+
+.cmd-impact-bar-fill {
+  height: 100%;
+  background: currentColor;
+  border-radius: 4px;
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Investment Row Container */
+.cmd-investment-item {
+  padding: 20px;
+  border: 1px solid var(--cmd-border);
+  border-radius: var(--radius-md);
+  background: #ffffff;
+  margin-bottom: 16px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.cmd-investment-item:hover {
+  border-color: #cbd5e1;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
+}
+
+.cmd-inv-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.cmd-inv-name {
+  font-weight: 800;
+  font-size: 15px;
+  color: var(--cmd-navy);
+}
+
+.cmd-inv-desc {
+  font-size: 13px;
+  color: var(--cmd-text-muted);
+  line-height: 1.4;
+  margin-top: 2px;
+}
+
+/* ── Executive Dashboard Sidebar (Right 30% Band) ── */
+.cmd-sidebar-panel {
+  position: sticky;
+  top: 90px;
+  background: #ffffff;
+  border: 1px solid var(--cmd-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+}
+
+.cmd-sidebar-header {
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  color: #ffffff;
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.cmd-sidebar-title {
+  font-size: 14px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: #ffffff;
+  margin: 0;
+}
+
+.cmd-sidebar-body {
+  padding: 20px;
+}
+
+.cmd-metric-box {
+  background: #f8fafc;
+  border: 1px solid var(--cmd-border);
+  border-radius: 10px;
+  padding: 14px 16px;
+  margin-bottom: 12px;
+  transition: all 0.2s ease;
+}
+
+.cmd-metric-box:hover {
+  background: #ffffff;
+  border-color: #cbd5e1;
+  transform: translateY(-1px);
+}
+
+.cmd-metric-label {
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--cmd-text-muted);
+  margin-bottom: 4px;
+}
+
+.cmd-metric-value {
+  font-size: 22px;
+  font-weight: 800;
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--cmd-navy);
+  line-height: 1.2;
+}
+
+.cmd-metric-value.green {
+  color: #10b981;
+}
+
+.cmd-metric-value.red {
+  color: #ef4444;
+}
+
+.cmd-metric-sub {
+  font-size: 11.5px;
+  color: var(--cmd-text-muted);
+  margin-top: 4px;
+}
+
+/* Breakup button */
+.cmd-btn-breakup {
+  width: 100%;
+  background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+  color: var(--cmd-blue-accent);
+  border: 1px solid rgba(37, 99, 235, 0.25);
+  padding: 12px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 800;
+  margin-top: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.1);
+}
+
+.cmd-btn-breakup:hover {
+  background: var(--cmd-blue-accent);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+}
+
+/* ── Bottom Fixed Action Navigation Bar ── */
+.cmd-bottom-bar {
+  background: #ffffff;
+  border-top: 1px solid var(--cmd-border);
+  padding: 16px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  bottom: 0;
+  z-index: 900;
+  box-shadow: 0 -6px 20px rgba(15, 23, 42, 0.08);
+}
+
+.cmd-btn-secondary {
+  background: #f1f5f9;
+  color: var(--cmd-navy);
+  border: 1px solid var(--cmd-border);
+  padding: 11px 22px;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 13.5px;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.cmd-btn-secondary:hover {
+  background: #e2e8f0;
+  color: var(--cmd-navy);
+}
+
+.cmd-btn-primary {
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  color: #ffffff;
+  border: none;
+  padding: 11px 26px;
+  border-radius: 10px;
+  font-weight: 800;
+  font-size: 13.5px;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.2);
+  transition: all 0.2s ease;
+}
+
+.cmd-btn-primary:hover {
+  background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+  color: #ffffff;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.3);
+}
+
+.cmd-btn-submit {
+  background: var(--cmd-gold-gradient);
+  color: #ffffff;
+  border: none;
+  padding: 11px 26px;
+  border-radius: 10px;
+  font-weight: 800;
+  font-size: 13.5px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 4px 14px var(--cmd-gold-glow);
+  transition: all 0.2s ease;
+}
+
+.cmd-btn-submit:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px var(--cmd-gold-glow);
+}
+
+/* ── Modal Styling ── */
+.cmd-modal-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(6px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+}
+
+.cmd-modal-dialog {
+  background: #ffffff;
+  border-radius: var(--radius-lg);
+  width: 90%;
+  max-width: 680px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  overflow: hidden;
+  animation: modalSlideUp 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes modalSlideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.cmd-modal-header {
+  padding: 18px 24px;
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.cmd-modal-title {
+  font-size: 17px;
+  font-weight: 800;
+  margin: 0;
+}
+
+.cmd-modal-close {
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  color: #ffffff;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  font-size: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s ease;
+}
+
+.cmd-modal-close:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.cmd-modal-body {
+  padding: 24px;
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+/* ── Tables ── */
+.cmd-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13.5px;
+}
+
+.cmd-table th {
+  background: #f8fafc;
+  color: var(--cmd-text-muted);
+  font-weight: 800;
+  text-transform: uppercase;
+  font-size: 11px;
+  letter-spacing: 0.6px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--cmd-border);
+  text-align: left;
+}
+
+.cmd-table td {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--cmd-border);
+  color: var(--cmd-navy);
+}
+
+.cmd-table tr:last-child td {
+  border-bottom: none;
+}
+
+.cmd-table tr.highlight-own {
+  background: #eff6ff;
+  font-weight: 700;
+}
+
+.cmd-table th.highlight-col,
+.cmd-table td.highlight-col {
+  background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+  color: #ffffff;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .cmd-split-grid { grid-template-columns: 1fr; }
+  .cmd-sidebar-panel { position: static; }
+}
