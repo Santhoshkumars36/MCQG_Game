@@ -136,18 +136,17 @@ require_once __DIR__ . '/../includes/admin_header.php';
 
 <div class="mcqg-card">
   <div class="mcqg-stepper">
-    <div class="mcqg-stepper-fill" style="width:15%"></div>
+    <div class="mcqg-stepper-fill" style="width:20%"></div>
     <div class="mcqg-step completed"><div class="mcqg-step-circle">&#10003;</div><div class="mcqg-step-label">Title &amp; Case Study</div></div>
     <div class="mcqg-step active"><div class="mcqg-step-circle">2</div><div class="mcqg-step-label">Game Definition</div></div>
     <div class="mcqg-step"><div class="mcqg-step-circle">3</div><div class="mcqg-step-label">Capacity Drivers</div></div>
     <div class="mcqg-step"><div class="mcqg-step-circle">4</div><div class="mcqg-step-label">Demand Drivers</div></div>
     <div class="mcqg-step"><div class="mcqg-step-circle">5</div><div class="mcqg-step-label">Investments</div></div>
-    <div class="mcqg-step"><div class="mcqg-step-circle">6</div><div class="mcqg-step-label">Configuration</div></div>
-    <div class="mcqg-step"><div class="mcqg-step-circle">7</div><div class="mcqg-step-label">Publish</div></div>
+    <div class="mcqg-step"><div class="mcqg-step-circle">6</div><div class="mcqg-step-label">Publish</div></div>
   </div>
 
   <div class="mcqg-wizard-panel">
-    <h3>Step 2 of 7 &mdash; Game Definition</h3>
+    <h3>Step 2 of 6 &mdash; Game Definition</h3>
     <p class="text-muted">Core numbers for this game. Enter starting baseline data and annual period parameters below.</p>
 
     <?php if ($error): ?><div class="alert alert-danger"><?php echo htmlspecialchars($error); ?></div><?php endif; ?>

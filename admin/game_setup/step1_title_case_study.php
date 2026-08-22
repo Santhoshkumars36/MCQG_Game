@@ -97,12 +97,11 @@ require_once __DIR__ . '/../includes/admin_header.php';
     <div class="mcqg-step"><div class="mcqg-step-circle">3</div><div class="mcqg-step-label">Capacity Drivers</div></div>
     <div class="mcqg-step"><div class="mcqg-step-circle">4</div><div class="mcqg-step-label">Demand Drivers</div></div>
     <div class="mcqg-step"><div class="mcqg-step-circle">5</div><div class="mcqg-step-label">Investments</div></div>
-    <div class="mcqg-step"><div class="mcqg-step-circle">6</div><div class="mcqg-step-label">Configuration</div></div>
-    <div class="mcqg-step"><div class="mcqg-step-circle">7</div><div class="mcqg-step-label">Publish</div></div>
+    <div class="mcqg-step"><div class="mcqg-step-circle">6</div><div class="mcqg-step-label">Publish</div></div>
   </div>
 
   <div class="mcqg-wizard-panel">
-    <h3>Step 1 of 7 &mdash; Title &amp; Case Study</h3>
+    <h3>Step 1 of 6 &mdash; Title &amp; Case Study</h3>
     <p class="text-muted">Name the game, choose a game thumbnail, and write the business scenario players will read before deciding.</p>
 
     <?php if ($error): ?><div class="alert alert-danger"><?php echo htmlspecialchars($error); ?></div><?php endif; ?>

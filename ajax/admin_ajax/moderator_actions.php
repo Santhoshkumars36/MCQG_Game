@@ -87,6 +87,49 @@ try {
             echo json_encode(['success' => true, 'data' => $data]);
             break;
 
+        case 'get_messages':
+            $filter = $_GET['filter_team_id'] ?? $_POST['filter_team_id'] ?? 'all';
+            $db = Database::getInstance();
+            
+            if ($filter === '0' || $filter === 0) {
+                // Broadcasts / Common only
+                $messages = $db->fetchAll(
+                    "SELECT m.*, t.team_name FROM message_center m LEFT JOIN team_master t ON t.team_id = m.team_id WHERE m.game_id = :g AND m.team_id IS NULL ORDER BY m.created_on ASC",
+                    ['g' => $gameId]
+                );
+            } elseif ($filter !== 'all' && is_numeric($filter) && (int)$filter > 0) {
+                // Specific Team Thread (Team messages + Moderator direct messages to this team + Broadcasts)
+                $teamId = (int)$filter;
+                $messages = $db->fetchAll(
+                    "SELECT m.*, t.team_name FROM message_center m LEFT JOIN team_master t ON t.team_id = m.team_id WHERE m.game_id = :g AND (m.team_id = :t OR m.team_id IS NULL) ORDER BY m.created_on ASC",
+                    ['g' => $gameId, 't' => $teamId]
+                );
+            } else {
+                // All combined
+                $messages = $db->fetchAll(
+                    "SELECT m.*, t.team_name FROM message_center m LEFT JOIN team_master t ON t.team_id = m.team_id WHERE m.game_id = :g ORDER BY m.created_on ASC",
+                    ['g' => $gameId]
+                );
+            }
+            
+            $formatted = [];
+            foreach ($messages as $m) {
+                $isTeamSender = ($m['sender_type'] === 'Team');
+                $formatted[] = [
+                    'message_id'  => $m['message_id'],
+                    'sender_type' => $m['sender_type'],
+                    'sender_name' => $m['sender_name'],
+                    'team_id'     => $m['team_id'],
+                    'team_name'   => $m['team_name'],
+                    'text'        => $m['message_text'],
+                    'created_at'  => date('d M Y, h:i A', strtotime($m['created_on'])),
+                    'is_team'     => $isTeamSender,
+                    'is_broadcast'=> ($m['team_id'] === null)
+                ];
+            }
+            echo json_encode(['success' => true, 'messages' => $formatted]);
+            break;
+
         default:
             echo json_encode(['success' => false, 'message' => 'Invalid action']);
             break;

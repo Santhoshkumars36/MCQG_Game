@@ -6,7 +6,7 @@
 require_once __DIR__ . '/../../config/app_config.php';
 
 if (Auth::isTeam()) {
-    header('Location: ' . PLAYER_URL . 'landing.php');
+    header('Location: ' . PLAYER_URL . 'team_registration.php');
     exit;
 }
 
@@ -18,7 +18,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!Validator::required($username) || !Validator::required($password)) {
         $error = 'Please enter both username and password.';
     } elseif (Auth::attemptTeamLogin($username, $password)) {
-        header('Location: ' . PLAYER_URL . 'landing.php');
+        header('Location: ' . PLAYER_URL . 'team_registration.php');
         exit;
     } else {
         $error = 'Invalid username or password.';

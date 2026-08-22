@@ -83,7 +83,12 @@ class Session
 
     public static function isTeamLoggedIn(): bool
     {
-        return self::has(SESSION_TEAM_ID);
+        return self::has(SESSION_TEAM_ID) || self::has('mcqg_team_username');
+    }
+
+    public static function currentTeamUsername(): ?string
+    {
+        return self::get('mcqg_team_username') ?? self::get(SESSION_TEAM_NAME);
     }
 
     public static function currentAdminId(): ?int

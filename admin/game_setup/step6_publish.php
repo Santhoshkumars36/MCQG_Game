@@ -1,8 +1,8 @@
 <?php
 /**
- * MCQG Admin - Game Setup Step 7: Publish
- * Path: admin/game_setup/step7_publish.php
- * Source: MG19 Slide 3-7 (end of 7-step wizard) + Doc 2 (game_master.status)
+ * MCQG Admin - Game Setup Step 6: Publish
+ * Path: admin/game_setup/step6_publish.php
+ * Source: MG19 (end of 6-step wizard) + Doc 2 (game_master.status)
  * Final review screen - on confirm, status changes Draft -> Published
  * and per-year game_round_status rows are created so round_control/
  * can track progress from Year 1 onward.
@@ -38,7 +38,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['publish'])) {
             );
             if (!$exists) {
                 $db->insert('game_round_status', [
-                    'game_id' => $gameId, 'year_no' => $my['year_no'], 'status' => ROUND_STATUS_OPEN,
+                    'game_id' => $gameId,
+                    'year_no' => $my['year_no'],
+                    'status'  => ($my['year_no'] == 1 ? ROUND_STATUS_OPEN : 'Locked'),
                 ]);
             }
         }
@@ -51,7 +53,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['publish'])) {
     }
 }
 
-$pageTitle = 'Game Setup - Step 7';
+$pageTitle = 'Game Setup - Step 6';
 require_once __DIR__ . '/../includes/admin_header.php';
 ?>
 <div class="mcqg-main">
@@ -66,12 +68,11 @@ require_once __DIR__ . '/../includes/admin_header.php';
     <div class="mcqg-step completed"><div class="mcqg-step-circle">&#10003;</div><div class="mcqg-step-label">Capacity Drivers</div></div>
     <div class="mcqg-step completed"><div class="mcqg-step-circle">&#10003;</div><div class="mcqg-step-label">Demand Drivers</div></div>
     <div class="mcqg-step completed"><div class="mcqg-step-circle">&#10003;</div><div class="mcqg-step-label">Investments</div></div>
-    <div class="mcqg-step completed"><div class="mcqg-step-circle">&#10003;</div><div class="mcqg-step-label">Configuration</div></div>
-    <div class="mcqg-step active"><div class="mcqg-step-circle">7</div><div class="mcqg-step-label">Publish</div></div>
+    <div class="mcqg-step active"><div class="mcqg-step-circle">6</div><div class="mcqg-step-label">Publish</div></div>
   </div>
 
   <div class="mcqg-wizard-panel">
-    <h3>Step 7 of 7 &mdash; Review &amp; Publish</h3>
+    <h3>Step 6 of 6 &mdash; Review &amp; Publish</h3>
     <p class="text-muted">Review everything below, then publish to make this game available to teams.</p>
 
     <div class="row g-3 mb-4">
@@ -118,7 +119,7 @@ require_once __DIR__ . '/../includes/admin_header.php';
 
     <form method="POST">
       <div class="mcqg-wizard-nav">
-        <a href="step6_game_configuration.php" class="btn btn-mcqg-outline">Back</a>
+        <a href="step5_investments.php" class="btn btn-mcqg-outline">Back</a>
         <button type="submit" name="publish" value="1" class="btn btn-mcqg-gold" <?php echo $readyToPublish ? '' : 'disabled'; ?>>
           Publish Game
         </button>

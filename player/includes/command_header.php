@@ -17,7 +17,13 @@ $currentRound = $db->fetchOne(
     "SELECT * FROM game_round_status WHERE game_id = :g AND status != 'Processed' ORDER BY year_no LIMIT 1",
     ['g' => $gameId]
 );
-$yearNo = $currentRound['year_no'] ?? (int) ($game['no_of_years'] ?? 5);
+if (!isset($yearNo)) { 
+    $yearNo = $currentRound ? (int)$currentRound['year_no'] : 1; 
+}
+$unreadHeaderCount = (int) ($db->fetchOne(
+    "SELECT COUNT(*) AS cnt FROM message_center WHERE game_id = :g AND (team_id IS NULL OR team_id = :t) AND sender_type != 'Team' AND is_read = 0",
+    ['g' => $gameId, 't' => $teamId]
+)['cnt'] ?? 0);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -74,6 +80,17 @@ $yearNo = $currentRound['year_no'] ?? (int) ($game['no_of_years'] ?? 5);
   </div>
 
   <div class="cmd-navbar-right">
+    <!-- Moderator Messages Button with WhatsApp Red Count Badge -->
+    <button class="btn btn-outline-light btn-sm me-2 position-relative fw-bold" style="border-radius:8px; font-size:12.5px;" type="button" onclick="openLiveChatModal()">
+      <i class="fa-solid fa-comments text-warning me-1"></i> Moderator Chat
+      <span id="header-unread-badge" class="whatsapp-badge position-absolute top-0 start-100 translate-middle" style="<?php echo $unreadHeaderCount > 0 ? '' : 'display:none;'; ?>">
+        <?php echo $unreadHeaderCount; ?>
+      </span>
+    </button>
+
+    <a href="<?php echo PLAYER_URL; ?>team_registration.php" class="btn btn-outline-warning btn-sm me-2 fw-bold" style="border-radius:8px; font-size:12.5px;">
+      <i class="fa-solid fa-gamepad me-1"></i> Games Hub
+    </a>
     <div class="cmd-team-info">
       <div>Team</div>
       <div class="cmd-team-name"><?php echo htmlspecialchars($team['team_name'] ?? 'Player'); ?></div>

@@ -64,18 +64,17 @@ require_once __DIR__ . '/../includes/admin_header.php';
 
 <div class="mcqg-card">
   <div class="mcqg-stepper">
-    <div class="mcqg-stepper-fill" style="width:45%"></div>
+    <div class="mcqg-stepper-fill" style="width:60%"></div>
     <div class="mcqg-step completed"><div class="mcqg-step-circle">&#10003;</div><div class="mcqg-step-label">Title &amp; Case Study</div></div>
     <div class="mcqg-step completed"><div class="mcqg-step-circle">&#10003;</div><div class="mcqg-step-label">Game Definition</div></div>
     <div class="mcqg-step completed"><div class="mcqg-step-circle">&#10003;</div><div class="mcqg-step-label">Capacity Drivers</div></div>
     <div class="mcqg-step active"><div class="mcqg-step-circle">4</div><div class="mcqg-step-label">Demand Drivers</div></div>
     <div class="mcqg-step"><div class="mcqg-step-circle">5</div><div class="mcqg-step-label">Investments</div></div>
-    <div class="mcqg-step"><div class="mcqg-step-circle">6</div><div class="mcqg-step-label">Configuration</div></div>
-    <div class="mcqg-step"><div class="mcqg-step-circle">7</div><div class="mcqg-step-label">Publish</div></div>
+    <div class="mcqg-step"><div class="mcqg-step-circle">6</div><div class="mcqg-step-label">Publish</div></div>
   </div>
 
   <div class="mcqg-wizard-panel">
-    <h3>Step 4 of 7 &mdash; Demand Drivers</h3>
+    <h3>Step 4 of 6 &mdash; Demand Drivers</h3>
     <p class="text-muted">
       Cost share % for Capacity Drivers + Demand Drivers must total <strong>100%</strong> combined.
       Cost values show the monetary value at 1 decimal place.

@@ -22,8 +22,28 @@ $team = $teamId ? $db->fetchOne("SELECT * FROM team_master WHERE team_id = :t AN
 $game = $gameId ? $db->fetchOne("SELECT * FROM game_master WHERE game_id = :g", ['g' => $gameId]) : null;
 
 if (!$team || !$game) {
-    Auth::logout();
-    header('Location: ' . PLAYER_URL . 'auth/login.php');
+    header('Location: ' . PLAYER_URL . 'team_registration.php');
+    exit;
+}
+
+/* ── Point 6 Restriction Guard: If Round 1 is released & team didn't participate ── */
+$round1StatusCheck = $db->fetchOne(
+    "SELECT status FROM game_round_status WHERE game_id = :g AND year_no = 1",
+    ['g' => $gameId]
+);
+$resultCountR1Check = (int)$db->fetchOne(
+    "SELECT COUNT(*) AS c FROM team_result WHERE game_id = :g AND year_no = 1",
+    ['g' => $gameId]
+)['c'];
+$isR1Released = ($round1StatusCheck && $round1StatusCheck['status'] === ROUND_STATUS_PROCESSED) || ($resultCountR1Check > 0);
+
+$round1Dec = $db->fetchOne(
+    "SELECT * FROM team_decision WHERE team_id = :t AND year_no = 1",
+    ['t' => $teamId]
+);
+
+if ($isR1Released && empty($round1Dec)) {
+    header('Location: ' . PLAYER_URL . 'team_registration.php?error=game_started');
     exit;
 }
 
@@ -65,6 +85,12 @@ $lastProfit  = $latestResult ? (float) $latestResult['operating_profit'] : null;
 $completedCount = count($resultsByYear);
 $activeRoundNo  = null;   // the currently playable year
 
+/* ── Fetch Moderator Messages/Broadcasts for this team ── */
+$modMessages = $db->fetchAll(
+    "SELECT * FROM message_center WHERE game_id = :g AND (team_id IS NULL OR team_id = :t) ORDER BY created_on DESC LIMIT 5",
+    ['g' => $gameId, 't' => $teamId]
+);
+
 /* ── Determine status label for each year slot ──
    Status logic (matches spec + database):
      'Processed' in DB      → Completed  (team has a result row)
@@ -79,12 +105,21 @@ function resolveRoundStatus(int $yearNo, array $roundsByYear, array $resultsByYe
     if (!isset($roundsByYear[$yearNo])) {
         return 'locked';
     }
+
+    // Progression Rule: Round N (where N > 1) is ONLY active/unlocked if Round N-1 is Processed!
+    if ($yearNo > 1) {
+        $prevRoundStatus = $roundsByYear[$yearNo - 1]['status'] ?? '';
+        $prevHasResult   = isset($resultsByYear[$yearNo - 1]);
+        if ($prevRoundStatus !== 'Processed' && !$prevHasResult) {
+            return 'locked';
+        }
+    }
+
     $status = $roundsByYear[$yearNo]['status'] ?? '';
-    if (in_array($status, ['Open', 'AllSubmitted'])) {
+    if (in_array($status, ['Open', 'Live', 'AllSubmitted'])) {
         return 'active';
     }
     if ($status === 'Processed') {
-        // Should have a result row, but handle gracefully
         return 'completed';
     }
     return 'locked';
@@ -147,7 +182,11 @@ $currency  = DEFAULT_CURRENCY_SYMBOL;
         <span class="land-header-game-label">&nbsp;·&nbsp;<?php echo htmlspecialchars($game['game_name']); ?></span>
       </div>
     </div>
-    <div class="land-header-actions">
+    <div class="land-header-actions d-flex align-items-center gap-2">
+      <a href="<?php echo PLAYER_URL; ?>team_registration.php" class="land-logout-btn" style="border-color:var(--mcqg-gold); color:var(--mcqg-gold);" id="btn-games-hub">
+        <i class="fa-solid fa-gamepad me-1"></i>
+        Games Hub
+      </a>
       <a href="<?php echo PLAYER_URL; ?>auth/logout.php" class="land-logout-btn" id="btn-logout">
         <i class="fa-solid fa-right-from-bracket"></i>
         Logout
@@ -201,6 +240,28 @@ $currency  = DEFAULT_CURRENCY_SYMBOL;
           <div class="land-stat-val"><?php echo $completedCount; ?> / <?php echo $totalYears; ?></div>
           <div class="land-stat-lbl">Rounds Completed</div>
         </div>
+      </div>
+    </div>
+
+
+
+    <!-- ══════════════════════════════════════
+         MODERATOR COMMUNICATION HUB SECTION
+         ══════════════════════════════════════ -->
+    <div class="land-briefing-card mb-4" style="background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%); color: #ffffff; padding: 22px 28px; border-radius:18px; box-shadow: 0 10px 30px rgba(15,23,42,0.12);">
+      <div class="d-flex align-items-center justify-content-between flex-wrap gap-3 w-100">
+        <div class="d-flex align-items-center gap-3">
+          <div style="background:rgba(255,255,255,0.15); width:48px; height:48px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:22px; color:#fbbf24; flex-shrink:0;">
+            <i class="fa-solid fa-headset"></i>
+          </div>
+          <div>
+            <h5 class="m-0 fw-bold text-white fs-6">Moderator Communication Hub</h5>
+            <p class="m-0 text-white-50 small mt-0.5" style="font-size:13px;">Send live messages, request assistance, and receive real-time updates from the game moderator.</p>
+          </div>
+        </div>
+        <button class="btn btn-warning fw-bold px-4 py-2.5 rounded-pill shadow-sm" onclick="toggleLiveChatWidget()" style="font-size:13.5px; background:#fbbf24; border-color:#fbbf24; color:#0f172a;">
+          <i class="fa-solid fa-comments me-1.5"></i> Open Moderator Chat
+        </button>
       </div>
     </div>
 
@@ -456,5 +517,6 @@ document.addEventListener('DOMContentLoaded', function () {
   <?php endif; ?>
 });
 </script>
+<?php require_once __DIR__ . '/includes/player_chat_modal.php'; ?>
 </body>
 </html>

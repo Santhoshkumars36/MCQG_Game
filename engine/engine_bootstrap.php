@@ -125,11 +125,19 @@ function processGameRound(int $gameId, int $yearNo): array
         $capacityUtil = calculateCapacityUtilization((int) $decision['production_qty'], (int) $game['starting_capacity']);
 
         $previousResult = $db->fetchOne(
-            "SELECT cash_position FROM team_result WHERE team_id = :t AND year_no = :y",
-            ['t' => $teamId, 'y' => $yearNo - 1]
+            "SELECT cash_position FROM team_result WHERE team_id = :t AND year_no = :y AND game_id = :g",
+            ['t' => $teamId, 'y' => $yearNo - 1, 'g' => $gameId]
         );
         $previousCash = $previousResult ? (float) $previousResult['cash_position'] : (float) $team['opening_budget'];
-        $cashPosition = calculateCashPosition($previousCash, $operatingProfit);
+        
+        // Include Moderator Adjustments (Bonus + / Penalty -) assigned to this team for this round
+        $modAdjRow = $db->fetchOne(
+            "SELECT SUM(amount) AS total FROM moderator_adjustment WHERE team_id = :t AND game_id = :g AND year_no = :y",
+            ['t' => $teamId, 'g' => $gameId, 'y' => $yearNo]
+        );
+        $moderatorAdjustment = (float)($modAdjRow['total'] ?? 0);
+
+        $cashPosition = calculateCashPosition($previousCash, $operatingProfit) + $moderatorAdjustment;
 
         // --- Step 6: Save result --------------------------------------------
         $db->insert('team_result', [

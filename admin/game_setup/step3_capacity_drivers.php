@@ -70,18 +70,17 @@ require_once __DIR__ . '/../includes/admin_header.php';
 
 <div class="mcqg-card">
   <div class="mcqg-stepper">
-    <div class="mcqg-stepper-fill" style="width:30%"></div>
+    <div class="mcqg-stepper-fill" style="width:40%"></div>
     <div class="mcqg-step completed"><div class="mcqg-step-circle">&#10003;</div><div class="mcqg-step-label">Title &amp; Case Study</div></div>
     <div class="mcqg-step completed"><div class="mcqg-step-circle">&#10003;</div><div class="mcqg-step-label">Game Definition</div></div>
     <div class="mcqg-step active"><div class="mcqg-step-circle">3</div><div class="mcqg-step-label">Capacity Drivers</div></div>
     <div class="mcqg-step"><div class="mcqg-step-circle">4</div><div class="mcqg-step-label">Demand Drivers</div></div>
     <div class="mcqg-step"><div class="mcqg-step-circle">5</div><div class="mcqg-step-label">Investments</div></div>
-    <div class="mcqg-step"><div class="mcqg-step-circle">6</div><div class="mcqg-step-label">Configuration</div></div>
-    <div class="mcqg-step"><div class="mcqg-step-circle">7</div><div class="mcqg-step-label">Publish</div></div>
+    <div class="mcqg-step"><div class="mcqg-step-circle">6</div><div class="mcqg-step-label">Publish</div></div>
   </div>
 
   <div class="mcqg-wizard-panel">
-    <h3>Step 3 of 7 &mdash; Capacity Drivers</h3>
+    <h3>Step 3 of 6 &mdash; Capacity Drivers</h3>
     <p class="text-muted">Break down unit production cost by group and driver. Cost values auto-calculate to 1 decimal place.</p>
 
     <?php if ($error): ?><div class="alert alert-danger"><?php echo htmlspecialchars($error); ?></div><?php endif; ?>

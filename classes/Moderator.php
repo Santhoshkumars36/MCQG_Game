@@ -182,8 +182,8 @@ class Moderator
         // Unlock next round if exists
         $nextYear = $yearNo + 1;
         $nextRound = $db->fetchOne("SELECT * FROM game_round_status WHERE game_id = :g AND year_no = :y", ['g' => $gameId, 'y' => $nextYear]);
-        if ($nextRound && $nextRound['status'] === 'Locked') {
-            $db->update('game_round_status', ['status' => 'Not Launched'], 'game_id = :g AND year_no = :y', ['g' => $gameId, 'y' => $nextYear]);
+        if ($nextRound && ($nextRound['status'] === 'Locked' || $nextRound['status'] === 'Not Launched')) {
+            $db->update('game_round_status', ['status' => 'Open'], 'game_id = :g AND year_no = :y', ['g' => $gameId, 'y' => $nextYear]);
         }
 
         // Propagate moderator adjustments to Message Center for next round

@@ -5,8 +5,7 @@
  */
 $flash = Session::getFlash();
 ?>
-<div class="mcqg-topbar" style="display:flex; justify-content:space-between; align-items:center; padding:14px 0 22px;">
-  <button id="mcqg-sidebar-toggle" class="btn btn-sm btn-mcqg-outline">&#9776;</button>
+<div class="mcqg-topbar" style="display:flex; justify-content:flex-end; align-items:center; padding:14px 0 22px;">
   <div style="display:flex; align-items:center; gap:14px;">
     <span style="color:var(--mcqg-text-muted); font-size:13.5px;">
       Signed in as <strong><?php echo htmlspecialchars(Session::get(SESSION_ADMIN_NAME, 'Admin')); ?></strong>

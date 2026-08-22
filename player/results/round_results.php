@@ -119,7 +119,14 @@ $priceAlloc = $remainingSold - $ddAlloc;
 // Financial details
 $openingFund = $yearNo > 1 ? (float) $db->fetchColumn("SELECT cash_position FROM team_result WHERE team_id = :t AND year_no = :y AND game_id = :g", ['t' => $teamId, 'y' => $yearNo - 1, 'g' => $gameId]) : (float) $team['opening_budget'];
 $periodProfit = $myResult ? (float) $myResult['operating_profit'] : 0;
-$carryForwardFund = $myResult ? (float) $myResult['cash_position'] : $openingFund;
+
+$modAdjRow = $db->fetchOne(
+    "SELECT SUM(amount) AS total FROM moderator_adjustment WHERE team_id = :t AND game_id = :g AND year_no = :y",
+    ['t' => $teamId, 'g' => $gameId, 'y' => $yearNo]
+);
+$moderatorAdjustment = (float)($modAdjRow['total'] ?? 0);
+
+$carryForwardFund = $myResult ? (float) $myResult['cash_position'] : ($openingFund + $periodProfit + $moderatorAdjustment);
 $closingInventory = $myResult ? (int) $myResult['closing_inventory'] : 0;
 $unitCost = $myDecision && (int)$myDecision['production_qty'] > 0 ? $totalCapacityCost / (int)$myDecision['production_qty'] : ($game['unit_cost'] > 0 ? $game['unit_cost'] : 82.40);
 $closingInventoryValue = $closingInventory * $unitCost;
@@ -203,6 +210,9 @@ require_once __DIR__ . '/../includes/command_header.php';
             <tbody>
               <tr><td>Opening Fund</td><td class="text-end font-monospace"><?php echo $currency . number_format($openingFund, 2); ?></td></tr>
               <tr><td>Profit from Period</td><td class="text-end font-monospace <?php echo $periodProfit >= 0 ? 'text-success fw-bold' : 'text-danger fw-bold'; ?>"><?php echo ($periodProfit >= 0 ? '+' : '') . $currency . number_format($periodProfit, 2); ?></td></tr>
+              <?php if ($moderatorAdjustment != 0): ?>
+              <tr class="table-warning"><td><i class="fa-solid fa-sliders me-1"></i> Moderator Adjustment</td><td class="text-end font-monospace <?php echo $moderatorAdjustment >= 0 ? 'text-success fw-bold' : 'text-danger fw-bold'; ?>"><?php echo ($moderatorAdjustment >= 0 ? '+' : '') . $currency . number_format($moderatorAdjustment, 2); ?></td></tr>
+              <?php endif; ?>
               <tr class="table-light"><td class="fw-bold">Total Carry Forward Fund</td><td class="text-end font-monospace fw-bold text-primary"><?php echo $currency . number_format($carryForwardFund, 2); ?></td></tr>
               <tr><td>Closing Inventory</td><td class="text-end font-monospace"><?php echo number_format($closingInventory); ?> Units</td></tr>
               <tr><td>Closing Inventory Value</td><td class="text-end font-monospace"><?php echo $currency . number_format($closingInventoryValue, 2); ?></td></tr>

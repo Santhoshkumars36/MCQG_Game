@@ -13,7 +13,7 @@ if (Auth::isAdmin()) {
     exit;
 }
 if (Auth::isTeam()) {
-    header('Location: ' . PLAYER_URL . 'dashboard.php');
+    header('Location: ' . PLAYER_URL . 'team_registration.php');
     exit;
 }
 ?>

@@ -72,39 +72,43 @@ class Auth
     public static function loginTeam(string $username, string $password): bool
     {
         $db = Database::getInstance();
-        $team = $db->fetchOne(
+        
+        $teams = $db->fetchAll(
             'SELECT t.team_id, t.team_name, t.password_hash, t.is_active,
-                    t.game_id, g.status AS game_status
+                    t.game_id, t.username, g.status AS game_status
              FROM team_master t
              INNER JOIN game_master g ON g.game_id = t.game_id
-             WHERE t.username = :username LIMIT 1',
-            [':username' => $username]
+             WHERE LOWER(TRIM(t.username)) = LOWER(:username) AND t.is_active = 1',
+            [':username' => trim($username)]
         );
 
-        if (!$team || (int)$team['is_active'] !== 1) {
+        if (empty($teams)) {
             Logger::warning("Failed team login attempt for username: $username");
             return false;
         }
 
-        if ($team['game_status'] !== GAME_STATUS_PUBLISHED) {
-            Logger::warning("Team '{$username}' tried to log in to an unpublished game.");
-            return false;
+        $matchedTeam = null;
+        foreach ($teams as $t) {
+            $hash = $t['password_hash'];
+            $isDemoHash = (strpos($hash, 'exampleHashReplaceOnSetup') !== false);
+            $isValidPassword = $isDemoHash ? ($password === 'team123') : password_verify($password, $hash);
+            if ($isValidPassword) {
+                $matchedTeam = $t;
+                break;
+            }
         }
 
-        $hash = $team['password_hash'];
-        $isDemoHash = (strpos($hash, 'exampleHashReplaceOnSetup') !== false);
-        $isValidPassword = $isDemoHash ? ($password === 'team123') : password_verify($password, $hash);
-
-        if (!$isValidPassword) {
+        if (!$matchedTeam) {
             Logger::warning("Wrong password for team username: $username");
             return false;
         }
 
         session_regenerate_id(true);
-        Session::set(SESSION_TEAM_ID, (int)$team['team_id']);
-        Session::set(SESSION_TEAM_NAME, $team['team_name']);
-        Session::set(SESSION_GAME_ID, (int)$team['game_id']);
-        Logger::activity("Team '{$team['team_name']}' logged in.");
+        Session::set('mcqg_team_username', $matchedTeam['username']);
+        Session::set(SESSION_TEAM_ID, (int)$matchedTeam['team_id']);
+        Session::set(SESSION_TEAM_NAME, $matchedTeam['team_name']);
+        Session::set(SESSION_GAME_ID, (int)$matchedTeam['game_id']);
+        Logger::activity("Team '{$matchedTeam['team_name']}' logged in.");
         return true;
     }
 

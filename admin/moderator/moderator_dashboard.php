@@ -341,23 +341,55 @@ require_once __DIR__ . '/../includes/admin_header.php';
       <div class="row g-4">
         <div class="col-lg-8">
           <div class="mod-card">
-            <div class="mod-card-header">
-              <h5>Message Feed Stream</h5>
-              <button class="btn btn-sm btn-primary fw-bold" onclick="openBroadcastModal()">+ Post New Message</button>
+            <div class="mod-card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+              <h5 class="mb-0">Message Feed Stream</h5>
+              <div class="d-flex align-items-center gap-2">
+                <label class="small fw-bold text-muted mb-0">Channel:</label>
+                <select id="msg-feed-team-filter" class="form-select form-select-sm" style="width: 220px; font-weight: 600;" onchange="filterMessageFeedStream(this.value)">
+                  <option value="all">🌐 All Channels (Combined)</option>
+                  <option value="0">📢 Broadcasts to All (Common)</option>
+                  <?php foreach ($teams as $t): ?>
+                    <option value="<?php echo $t['team_id']; ?>">💬 Chat: <?php echo htmlspecialchars($t['team_name']); ?></option>
+                  <?php endforeach; ?>
+                </select>
+              </div>
             </div>
-            <div class="p-3" style="max-height: 500px; overflow-y: auto; background:#f8fafc;">
-              <?php foreach ($messages as $m): ?>
-                <div class="mod-message-item">
-                  <div class="mod-message-sender">
-                    <span>
-                      <?php echo htmlspecialchars($m['sender_name']); ?>
-                      <?php if ($m['team_name']): ?> &rsaquo; <span style="color:#0284c7;"><?php echo htmlspecialchars($m['team_name']); ?></span><?php endif; ?>
-                    </span>
-                    <span class="text-muted fw-normal small"><?php echo date('d M Y, h:i A', strtotime($m['created_on'])); ?></span>
-                  </div>
-                  <div class="mod-message-body"><?php echo htmlspecialchars($m['message_text']); ?></div>
+            <div class="p-3 d-flex flex-column gap-3" id="messageStreamContainer" style="max-height: 520px; overflow-y: auto; background:#f8fafc; border-radius:8px;">
+              <?php if (empty($messages)): ?>
+                <div class="text-center py-5 text-muted small">
+                  <i class="fa-solid fa-comments fs-2 mb-2 opacity-50"></i>
+                  <p class="mb-0">No broadcast or direct messages sent yet.</p>
                 </div>
-              <?php endforeach; ?>
+              <?php else: ?>
+                <?php foreach ($messages as $m): 
+                  $isTeamSender = ($m['sender_type'] === 'Team');
+                ?>
+                  <div class="d-flex align-items-start gap-2 <?php echo $isTeamSender ? 'justify-content-start' : 'justify-content-end'; ?>">
+                    <?php if ($isTeamSender): ?>
+                      <div style="width:34px; height:34px; border-radius:50%; background:#0284c7; color:#fff; display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:bold; flex-shrink:0;">
+                        <i class="fa-solid fa-users"></i>
+                      </div>
+                    <?php endif; ?>
+
+                    <div style="max-width:80%; padding:12px 16px; border-radius:14px; <?php echo $isTeamSender ? 'background:#ffffff; border:1px solid #cbd5e1; color:#0f172a; box-shadow:0 2px 6px rgba(0,0,0,0.04);' : 'background:#1e3a8a; color:#ffffff; box-shadow:0 4px 12px rgba(30,58,138,0.25);'; ?>">
+                      <div class="d-flex justify-content-between align-items-center mb-1 gap-3" style="font-size:11.5px; opacity:0.9;">
+                        <strong>
+                          <?php echo htmlspecialchars($m['sender_name']); ?>
+                          <?php if ($m['team_name'] && !$isTeamSender): ?> &rsaquo; <?php echo htmlspecialchars($m['team_name']); ?><?php elseif ($isTeamSender): ?><span class="badge bg-info-subtle text-info-emphasis ms-1" style="font-size:9px;">Team Message</span><?php endif; ?>
+                        </strong>
+                        <span class="small" style="opacity:0.75;"><?php echo date('d M Y, h:i A', strtotime($m['created_on'])); ?></span>
+                      </div>
+                      <div style="font-size:13.5px; line-height:1.45; word-break:break-word;"><?php echo htmlspecialchars($m['message_text']); ?></div>
+                    </div>
+
+                    <?php if (!$isTeamSender): ?>
+                      <div style="width:34px; height:34px; border-radius:50%; background:#1e3a8a; color:#fff; display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:bold; flex-shrink:0;">
+                        <i class="fa-solid fa-user-shield"></i>
+                      </div>
+                    <?php endif; ?>
+                  </div>
+                <?php endforeach; ?>
+              <?php endif; ?>
             </div>
           </div>
         </div>
@@ -372,7 +404,7 @@ require_once __DIR__ . '/../includes/admin_header.php';
               
               <div class="mb-3">
                 <label class="form-label small fw-bold">Recipient</label>
-                <select name="team_id" class="form-select form-select-sm">
+                <select name="team_id" id="composer-recipient-select" class="form-select form-select-sm" onchange="onComposerRecipientChange(this.value)">
                   <option value="">Broadcast to All Teams</option>
                   <?php foreach ($teams as $t): ?>
                     <option value="<?php echo $t['team_id']; ?>"><?php echo htmlspecialchars($t['team_name']); ?></option>
@@ -581,14 +613,14 @@ require_once __DIR__ . '/../includes/admin_header.php';
     modal.show();
 
     fetch(`../../ajax/admin_ajax/moderator_actions.php?action=get_team_round_detail&game_id=${currentGameId}&team_id=${teamId}&year_no=${yearNo}`)
-      .then(res => res.json())
-      .then(res => {
-        if (res.success && res.data) {
-          const d = res.data;
+      .then(response => response.json())
+      .then(resData => {
+        if (resData.success && resData.data) {
+          const d = resData.data;
           document.getElementById('teamDetailModalTitle').textContent = `${d.team.team_name} — Round ${yearNo} Detail`;
 
           const dec = d.decision;
-          const res = d.result;
+          const teamRes = d.result;
 
           bodyEl.innerHTML = `
             <div class="row g-3">
@@ -604,9 +636,9 @@ require_once __DIR__ . '/../includes/admin_header.php';
               <div class="col-md-6">
                 <div class="card p-3 border shadow-sm">
                   <h6 class="fw-bold text-success">Financial Performance</h6>
-                  <div class="d-flex justify-content-between py-1 border-bottom"><span>Selling Price:</span><strong>&#8377;${dec ? Number(dec.selling_price).toFixed(2) : '--'}</strong></div>
-                  <div class="d-flex justify-content-between py-1 border-bottom"><span>Sales Revenue:</span><strong>&#8377;${res ? Number(res.sales_revenue).toLocaleString() : '--'}</strong></div>
-                  <div class="d-flex justify-content-between py-1"><span>Operating Profit:</span><strong class="${res && res.operating_profit >= 0 ? 'text-success' : 'text-danger'}">&#8377;${res ? Number(res.operating_profit).toLocaleString() : '--'}</strong></div>
+                  <div class="d-flex justify-content-between py-1 border-bottom"><span>Selling Price:</span><strong>&#8377;${dec && dec.selling_price ? Number(dec.selling_price).toFixed(2) : '--'}</strong></div>
+                  <div class="d-flex justify-content-between py-1 border-bottom"><span>Sales Revenue:</span><strong>&#8377;${teamRes && teamRes.sales_revenue ? Number(teamRes.sales_revenue).toLocaleString() : '--'}</strong></div>
+                  <div class="d-flex justify-content-between py-1"><span>Operating Profit:</span><strong class="${teamRes && teamRes.operating_profit >= 0 ? 'text-success' : 'text-danger'}">&#8377;${teamRes && teamRes.operating_profit !== null ? Number(teamRes.operating_profit).toLocaleString() : '--'}</strong></div>
                 </div>
               </div>
             </div>
@@ -621,7 +653,12 @@ require_once __DIR__ . '/../includes/admin_header.php';
               ` : '<p class="text-muted small mb-0">No driver investments selected for this round.</p>'}
             </div>
           `;
+        } else {
+          bodyEl.innerHTML = `<div class="alert alert-danger mb-0">${resData.message || 'Unable to load team details.'}</div>`;
         }
+      })
+      .catch(err => {
+        bodyEl.innerHTML = `<div class="alert alert-danger mb-0">Error loading details: ${escapeHtml(err.message)}</div>`;
       });
   }
 
@@ -728,14 +765,91 @@ require_once __DIR__ . '/../includes/admin_header.php';
       });
   });
 
+  // Channel Filtering for Message Center
+  function filterMessageFeedStream(filterVal) {
+    const container = document.getElementById('messageStreamContainer');
+    if (!container) return;
+    container.innerHTML = '<div class="text-center py-4 text-muted small"><div class="spinner-border spinner-border-sm text-primary me-2"></div>Loading channel messages...</div>';
+
+    fetch(`../../ajax/admin_ajax/moderator_actions.php?action=get_messages&game_id=${currentGameId}&filter_team_id=${encodeURIComponent(filterVal)}`)
+      .then(res => res.json())
+      .then(data => {
+        if (!data.success || !data.messages || data.messages.length === 0) {
+          container.innerHTML = `
+            <div class="text-center py-5 text-muted small">
+              <i class="fa-solid fa-comments fs-2 mb-2 opacity-50"></i>
+              <p class="mb-0">No messages found in this chat channel.</p>
+            </div>
+          `;
+          return;
+        }
+
+        container.innerHTML = data.messages.map(m => {
+          const isTeamSender = m.is_team;
+          if (isTeamSender) {
+            return `
+              <div class="d-flex align-items-start gap-2 justify-content-start">
+                <div style="width:34px; height:34px; border-radius:50%; background:#0284c7; color:#fff; display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:bold; flex-shrink:0;">
+                  <i class="fa-solid fa-users"></i>
+                </div>
+                <div style="max-width:80%; padding:12px 16px; border-radius:14px; background:#ffffff; border:1px solid #cbd5e1; color:#0f172a; box-shadow:0 2px 6px rgba(0,0,0,0.04);">
+                  <div class="d-flex justify-content-between align-items-center mb-1 gap-3" style="font-size:11.5px; opacity:0.9;">
+                    <strong>${escapeHtml(m.sender_name)} <span class="badge bg-info-subtle text-info-emphasis ms-1" style="font-size:9px;">Team Message</span></strong>
+                    <span class="small" style="opacity:0.75;">${escapeHtml(m.created_at)}</span>
+                  </div>
+                  <div style="font-size:13.5px; line-height:1.45; word-break:break-word;">${escapeHtml(m.text)}</div>
+                </div>
+              </div>
+            `;
+          } else {
+            const recipientTag = m.team_name ? ` &rsaquo; ${escapeHtml(m.team_name)}` : ' <span class="badge bg-warning-subtle text-warning-emphasis ms-1" style="font-size:9px;">Broadcast</span>';
+            return `
+              <div class="d-flex align-items-start gap-2 justify-content-end">
+                <div style="max-width:80%; padding:12px 16px; border-radius:14px; background:#1e3a8a; color:#ffffff; box-shadow:0 4px 12px rgba(30,58,138,0.25);">
+                  <div class="d-flex justify-content-between align-items-center mb-1 gap-3" style="font-size:11.5px; opacity:0.9;">
+                    <strong>${escapeHtml(m.sender_name)}${recipientTag}</strong>
+                    <span class="small" style="opacity:0.75;">${escapeHtml(m.created_at)}</span>
+                  </div>
+                  <div style="font-size:13.5px; line-height:1.45; word-break:break-word;">${escapeHtml(m.text)}</div>
+                </div>
+                <div style="width:34px; height:34px; border-radius:50%; background:#1e3a8a; color:#fff; display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:bold; flex-shrink:0;">
+                  <i class="fa-solid fa-user-shield"></i>
+                </div>
+              </div>
+            `;
+          }
+        }).join('');
+
+        container.scrollTop = container.scrollHeight;
+      })
+      .catch(err => {
+        console.error('Error fetching channel messages:', err);
+        container.innerHTML = '<div class="text-center py-4 text-danger small">Error loading message stream</div>';
+      });
+  }
+
+  function onComposerRecipientChange(teamIdVal) {
+    const filterSelect = document.getElementById('msg-feed-team-filter');
+    if (filterSelect) {
+      const targetFilter = (teamIdVal === "" || teamIdVal === null) ? "0" : teamIdVal;
+      filterSelect.value = targetFilter;
+      filterMessageFeedStream(targetFilter);
+    }
+  }
+
   document.getElementById('tab-message-form').addEventListener('submit', function(e) {
     e.preventDefault();
     const formData = new FormData(this);
     fetch('../../ajax/admin_ajax/moderator_actions.php', { method: 'POST', body: formData })
       .then(res => res.json())
       .then(res => {
-        if (res.success) { alert('Broadcast announcement posted!'); location.reload(); }
-        else alert(res.message);
+        if (res.success) {
+          this.querySelector('textarea[name="message_text"]').value = '';
+          const currentFilter = document.getElementById('msg-feed-team-filter').value;
+          filterMessageFeedStream(currentFilter);
+        } else {
+          alert(res.message);
+        }
       });
   });
 </script>
